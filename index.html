@@ -1,51 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Score</title>
-<style>
-    .scorecard {
-        border: 1px solid black;
-        padding: 10px;
-        margin-top: 10px;
-    }
-    #score {
-        font-size: 40px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .hidden {
-        display: none;
-    }
-    .on-strike {
-        background-color: yellow;
-    }
-    .out {
-        background-color: lightgray;
-    }
-    #runButtons button {
-        font-size: 18px;
-        padding: 10px 20px;
-        margin: 5px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score</title>
+    <style>
+        .scorecard {
+            border: 1px solid black;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        #score {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .on-strike {
+            border: 2px solid lightskyblue;
+        }
+
+        .out {
+            border: 2px solid red !important;
+        }
+
+        #runButtons button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+
+        /* Default styles */
+        #playerNames div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            /* Add margin between stacked elements */
+        }
+
+        #playerNames label {
+            margin-right: 10px;
+            margin-bottom: 0;
+            /* Reset bottom margin for labels */
+        }
+
+        #playerNames input,
+        #playerNames select {
+            margin-bottom: 0;
+            /* Reset bottom margin for inputs and selects */
+        }
+
+        /* Media query for screens smaller than or equal to 600px (typical mobile devices) */
+        @media (max-width: 600px) {
+            #playerNames div {
+                flex-direction: column;
+                /* Stack elements vertically */
+                align-items: flex-start;
+                /* Align items to the start */
+                margin-bottom: 20px;
+                /* Increase margin between stacked elements */
+            }
+
+            #playerNames label {
+                margin-right: 0;
+                /* Remove right margin for labels */
+                margin-bottom: 5px;
+                /* Add bottom margin for labels */
+                display: block;
+                /* Ensure label is displayed as a block element */
+            }
+        }
+
+        /* Added styles */
+        .playerInfo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .playerInfo label {
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+
+        .playerInfo input,
+        .playerInfo select {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 600px) {
+            .playerInfo {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+
+            .playerInfo label {
+                margin-right: 0;
+                margin-bottom: 5px;
+                display: block;
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal content styles */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* 80% width */
+        }
+
+        /* Close button styles */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
+<body></body>
+
 <body>
-    <label for="players">Number of Players:</label>
-    <select id="players" onchange="updatePlayerNames()">
-        <option value="1">1 Player</option>
-        <option value="2">2 Players</option>
-        <option value="3">3 Players</option>
-    </select>
-    <br><br>
-    <div id="playerNames">
-        <label for="player1">Player 1 Name:</label>
-        <input type="text" id="player1" value="Player 1">
-        <br><br>
+    <div id="console-log-viewer" style="position: fixed;
+         bottom: 10px;
+          left: 10px;
+           max-height: 200px;
+            overflow-y: auto;
+             background-color: rgba(0, 0, 0, 0.8);
+              color: white;
+               font-family: Arial, sans-serif;
+                font-size: 14px;
+                 padding: 10px;
+                  box-sizing: border-box;">
     </div>
-    <br><br>
-    <button id="startButton" onclick="startGame()">Start Game</button>
+
+    <div id="playerSelection" style="margin-bottom: 15px;"> <!-- Added margin-bottom -->
+        <label for="players">Number of Players:</label>
+        <select id="players" onchange="updatePlayerNames()">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+    </div>
+    <div id="playerNames" style="margin-bottom: 15px;"> <!-- Added margin-bottom -->
+        <div class="playerInfo">
+            <label for="player1">Player 1 Name:</label>
+            <input type="text" id="player1" value="Player 1"> &nbsp;&nbsp;
+            <label for="wickets1">Wickets:</label>
+            <select id="wickets1" onchange="">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    </div>
+    <div id="oversInput" style="margin-bottom: 15px;"> <!-- Added margin-bottom -->
+        <label for="overs">Number of Overs:</label>
+        <input type="number" id="overs" min="0" value="0">
+    </div>
+
+    <button id="startButton" onclick="startGame()" style="margin-bottom: 15px;">Start Game</button>
+    <!-- Added margin-bottom -->
+
     <br><br>
     <div id="score" class="hidden"></div>
     <div class="scorecard" id="scorecard" class="hidden"></div>
@@ -61,45 +217,225 @@
         <button onclick="addWide()">Wd</button>
         <button onclick="addNoBall()">Nb</button>
         <button onclick="addBouncer()">Bouncer</button>
+        <button onclick="addWicket()">Wicket</button>
         <button onclick="undoLastAction()">Undo</button>
         <button onclick="resetMatch()">Reset</button>
+        <button id="show-wickets-button">Show Wickets</button>
     </div>
     <!-- End of run buttons -->
 
+    <!-- The popup modal -->
+    <div id="wickets-modal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span> <!-- Close button -->
+            <h2>Wickets List</h2>
+            <ol id="wickets-list"></ol> <!-- List of wickets -->
+        </div>
+    </div>
+
     <script>
-        let numPlayers = 0;
-        let currentPlayer = 1;
+        let numPlayers = 1;
+        let striker = 1;
+        let nonStriker = 0;
         let players = {};
-        let wickets = 0;
+        let wickets = [];
+        let wicketsRemaining = 0;
         let overs = 0;
         let ballsThisOver = 0;
-        let totalBallsPerOver = 6; // Assuming 6 balls per over
+        let totalBallsPerOver = 6;
+        let totalRuns = 0;
+        let totalBalls = 0;
+        let remainingPlayers = [];
 
         function updatePlayerNames() {
-            let numPlayers = parseInt(document.getElementById('players').value);
+            let selectedPlayers = parseInt(document.getElementById('players').value);
+            if (selectedPlayers !== numPlayers) {
+                numPlayers = selectedPlayers;
+                updateNonStriker()
+            }
+
             let playerNamesHTML = '';
             for (let i = 1; i <= numPlayers; i++) {
                 let playerName = players[i] ? players[i].name : '';
-                playerNamesHTML += `<label for="player${i}">Player ${i} Name:</label>
-                <input type="text" id="player${i}" value="Player ${i}">
-                <br><br>`;
+                playerNamesHTML += `
+            <div>
+                <label for="player${i}">Player ${i} Name:</label>
+                <input type="text" id="player${i}" value="Player ${i}"> &nbsp;&nbsp;
+                <label for="wickets${i}">Wickets:</label>
+                <select id="wickets${i}">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>`;
             }
             document.getElementById('playerNames').innerHTML = playerNamesHTML;
         }
 
         function updateScorecard() {
             let scorecard = document.getElementById('scorecard');
+            scorecard.style.fontSize = '22px'
             scorecard.innerHTML = '';
             for (let player in players) {
-                if (players[player].balls >= 0) {
-                    scorecard.innerHTML += `<p id="player${player}" class="${currentPlayer === parseInt(player) ? 'on-strike' : ''}">${players[player].name}: ${players[player].runs} (${players[player].balls}) [4s: ${players[player].fours}, 6s: ${players[player].sixes}, Extras: ${players[player].extras}, Strike Rate: ${(players[player].runs / players[player].balls * 100).toFixed(2)}]</p>`;
+                // console.log(`Runs for player ${player}:`, players[player].runs);
+                // console.log(`Balls faced for player ${player}:`, players[player].balls);
+                let strikeRate = players[player].balls > 0 ? (players[player].runs / players[player].balls * 100).toFixed(2) : '0.00';
+                // console.log(`Strike rate for player ${player}:`, strikeRate);
+                scorecard.innerHTML += `<p id="player${player}" class="${striker === parseInt(player) ? 'on-strike' : ''}">${players[player].name}: ${players[player].runs} (${players[player].balls}) [4s: ${players[player].fours}, 6s: ${players[player].sixes}, Extras: ${players[player].extras}, Strike Rate: ${strikeRate}]</p>`;
+            }
+        }
+
+        function updateScore() {
+            let totalRuns = 0;
+            let totalBalls = 0;
+
+            for (let player in players) {
+                totalRuns += players[player].runs;
+                totalBalls += players[player].balls;
+            }
+
+            let oversCompleted = Math.floor(totalBalls / totalBallsPerOver);
+            let ballsRemaining = totalBalls % totalBallsPerOver;
+
+            let runRate = totalRuns > 0 ? totalRuns / (totalBalls / 6) : 0; // Calculate run rate
+            if (isNaN(runRate)) {
+                runRate = 0; // Set run rate to 0 if it's NaN
+            }
+
+            let score = document.getElementById('score');
+            score.innerHTML = `${totalRuns}/${wickets.length} (${oversCompleted}.${ballsRemaining} overs) Run Rate: ${runRate.toFixed(2)}`;
+
+            // Update the UI to display the list of wickets
+            let wicketsList = document.getElementById('wickets-list');
+            if (!wicketsList) {
+                console.warn("Wickets list element not found.");
+                return; // Exit function if element not found
+            }
+
+            // Clear any existing content inside the wickets list
+            wicketsList.innerHTML = '';
+
+            // Check if there are no wickets
+            if (wickets.length === 0) {
+                // If no wickets have fallen, display a message
+                let listItem = document.createElement('li');
+                listItem.textContent = "No wickets have fallen.";
+                wicketsList.appendChild(listItem);
+            } else {
+                // Loop through each wicket in the wickets array
+                wickets.forEach((wicket, index) => {
+
+                    // Create a new list item element for the wicket
+                    let listItem = document.createElement('li');
+
+                    // Set the text content of the list item to display wicket information
+                    listItem.textContent = `Wicket ${index + 1}: ${wicket.batsman} (b ${wicket.bowler})`;
+
+                    // If bowler information is available and wicket is credited, add it to the text content
+                    if (wicket.bowler && wicket.credited) {
+                        listItem.textContent += ` (b ${wicket.bowler})`;
+                    }
+
+                    // Append the created list item to the wickets list element
+                    wicketsList.appendChild(listItem);
+                });
+            }
+        }
+
+        function endGame() {
+
+        }
+
+        function addWicket() {
+            // Increment balls faced for the striker
+            players[striker].balls++;
+
+            // Decrement wickets remaining for the striker
+            let wicketsRemainingSelect = document.getElementById(`wickets${striker}`);
+            let wicketsRemaining = parseInt(wicketsRemainingSelect.value);
+            wicketsRemaining--;
+            let ballsFaced = players[striker].balls
+
+            if (wicketsRemaining > 0) {
+                console.log(players[striker].name + " has lost a wicket. He has " + wicketsRemaining + " remaining.");
+            }
+
+            // Check if the striker has lost all their wickets
+            if (wicketsRemaining === 0) {
+                if (ballsFaced === 1) {
+                    console.log((players[striker].name) + " is all out at " + players[striker].runs + " runs off " + players[striker].balls + " ball")
+                } else {
+                    console.log((players[striker].name) + " is all out at " + players[striker].runs + " runs off " + players[striker].balls + " balls")
+                }
+
+                // Remove the player from the strike and mark them as out
+                document.getElementById(`player${striker}`).classList.remove('on-strike');
+                document.getElementById(`player${striker}`).classList.add('out'); // Add the "out" class
+
+
+                console.log("added out to player")
+
+                // Switch strike if there are remaining players
+                let remainingPlayers = getRemainingPlayers();
+                if (remainingPlayers.length > 0) {
+                    // Find the next player with wickets
+                    let nextPlayerIndex = (remainingPlayers.indexOf(striker) + 1) % remainingPlayers.length;
+                    striker = remainingPlayers[nextPlayerIndex];
+                    document.getElementById(`player${striker}`).classList.add('on-strike');
+
+                    // Set the next player as non-striker if the wicket fell on the last ball of the over
+                    if (ballsThisOver === totalBallsPerOver) {
+                        nonStriker = striker;
+                    }
+                }
+            }
+
+            // Update wickets remaining for the striker
+            wicketsRemainingSelect.value = wicketsRemaining;
+
+            // Create a new wicket object and add it to the wickets array
+            let wicket = {
+                batsman: document.getElementById(`player${striker}`).value,
+                bowler: null,
+                credited: false
+            };
+            wickets.push(wicket);
+
+            // Update UI to display wickets
+            updateScore();
+            updateScorecard();
+
+            // Check if all players are out
+            if (getRemainingPlayers().length === 0) {
+                let endGameConfirmation = confirm("All players are out. Do you want to end the game?");
+                if (endGameConfirmation) {
+                    endGame(); // Call function to end the game
+                } else {
+                    console.log("Game continues.");
                 }
             }
         }
 
+        // Function to count the number of players with wickets remaining
+        function getRemainingPlayers() {
+            for (let i = 1; i <= numPlayers; i++) {
+                let wicketsRemaining = parseInt(document.getElementById(`wickets${i}`).value);
+                if (wicketsRemaining > 0) {
+                    remainingPlayers.push(i);
+                }
+            }
+            return remainingPlayers;
+        }
+
         function startGame() {
-            console.log('Starting Game')
-            let numPlayers = parseInt(document.getElementById('players').value);
+            console.log('Starting Game');
+            let numOvers = parseInt(document.getElementById('overs').value);
+            numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
+            console.log("numPlayers is " + numPlayers + " and numOvers is " + numOvers);
+
             let playerNames = [];
             for (let i = 1; i <= numPlayers; i++) {
                 let playerName = document.getElementById('player' + i).value;
@@ -107,37 +443,26 @@
                     playerNames.push(playerName);
                 }
             }
+
             if (playerNames.length === numPlayers || numPlayers === 1) {
                 for (let i = 1; i <= numPlayers; i++) {
-                    players[i] = { name: playerNames[i - 1], runs: 0, balls: 0, fours: 0, sixes: 0, extras: 0, notOut: 0};
+                    players[i] = { name: playerNames[i - 1], runs: 0, balls: 0, fours: 0, sixes: 0, extras: 0, notOut: 0 };
                 }
+
                 document.getElementById('playerNames').classList.add('hidden');
-                document.getElementById('players').classList.add('hidden');
+                document.getElementById('playerSelection').classList.add('hidden');
                 document.getElementById('startButton').classList.add('hidden');
+                document.getElementById('oversInput').classList.add('hidden');
                 document.getElementById('score').classList.remove('hidden');
                 document.getElementById('scorecard').classList.remove('hidden');
                 document.getElementById('runButtons').classList.remove('hidden');
+
                 updateScore();
                 updateScorecard();
                 document.getElementById('player1').classList.add('on-strike');
-
             } else {
                 alert('Please enter names for all players.');
             }
-        }
-
-        function updateScore() {
-            let totalRuns = 0;
-            let totalBalls = 0;
-            for (let player in players) {
-                totalRuns += players[player].runs;
-                totalBalls += players[player].balls;
-            }
-            let oversCompleted = Math.floor(totalBalls / totalBallsPerOver);
-            let ballsRemaining = totalBalls % totalBallsPerOver;
-
-            let score = document.getElementById('score');
-            score.innerHTML = `${totalRuns}/${wickets} (${oversCompleted}.${ballsRemaining} overs)`;
         }
 
         function switchOver() {
@@ -147,69 +472,82 @@
         }
 
         function switchStrike() {
-    // Remove the "on-strike" class from the current player
-    let currentPlayerElement = document.getElementById('player' + currentPlayer);
-    currentPlayerElement.classList.remove('on-strike');
-    console.log("Removing on-strike from " +currentPlayer);
+            if (numPlayers === 1) {
+                console.log("Only one player selected. Cannot switch strike.");
+                return; // Exit function if only one player
+            }
 
-    // Switch strike to the other player
-    if (currentPlayer === 1) {
-        currentPlayer = 2;
-    } else {
-        currentPlayer = 1;
-    }
+            // Update the striker and non-striker variables
+            let temp = striker;
+            striker = nonStriker;
+            nonStriker = temp;
 
-    // Add the "on-strike" class to the new player
-    currentPlayerElement = document.getElementById('player' + currentPlayer);
-    currentPlayerElement.classList.add('on-strike');
-    console.log("Adding on-strike to " +currentPlayer);
-
-    updateScore();
-}
+            // Use setTimeout to queue UI updates
+            setTimeout(() => {
+                // Update the classes of player elements
+                for (let i = 1; i <= numPlayers; i++) {
+                    let playerElement = document.getElementById('player' + i);
+                    if (playerElement) {
+                        if (i === striker) {
+                            playerElement.classList.add('on-strike');
+                        } else {
+                            playerElement.classList.remove('on-strike');
+                        }
+                    } else {
+                        console.warn("Player element not found for player:", i);
+                        console.warn("Num players:", numPlayers);
+                        return; // Exit function to prevent further warns
+                    }
+                }
+                updateScore(); // Call updateScore() here
+            }, 0);
+        }
 
         function switchStrikeIfSingleOrTriple(run) {
-            console.log("Switching strike if single or triple");
-    if (run === 1 || run === 3) {
-        if (ballsThisOver !== totalBallsPerOver) {
-            switchStrike(); // Switch strike if 1 or 3 on any ball except the 6th ball
+            if (run === 1 || run === 3) {
+                if (ballsThisOver !== totalBallsPerOver) {
+                    switchStrike(); // Switch strike if 1 or 3 on any ball except the 6th ball
+                }
+            }
         }
-    }
-}
 
         function addRun(run) {
-    players[currentPlayer].runs += run;
-    players[currentPlayer].balls++;
-    ballsThisOver++;
+            // Increment runs and balls for the striker
+            players[striker].runs += run;
+            players[striker].balls++;
+            ballsThisOver++;
 
-    updateScorecard();
-    updateScore();
+            // Increment fours or sixes if applicable
+            if (run === 4) {
+                players[striker].fours++;
+            } else if (run === 6) {
+                players[striker].sixes++;
+            }
 
-    if (run === 4) {
-        players[currentPlayer].fours++;
-    } else if (run === 6) {
-        players[currentPlayer].sixes++;
-    }
-
-    if (ballsThisOver === totalBallsPerOver) {
-        switchOver();
-        if (run !== 1 && run !== 3) {
-            switchStrike(); // Switch strike if not 1 or 3 on the 6th ball
+            // Check if the over is completed
+            if (ballsThisOver === totalBallsPerOver) {
+                switchOver(); // Switch over if all balls have been bowled
+                if (run !== 1 && run !== 3) {
+                    switchStrike(); // Switch strike if not 1 or 3 on the last ball of the over
+                }
+            } else if (ballsThisOver < totalBallsPerOver) {
+                // Switch strike if 1 or 3 is scored
+                switchStrikeIfSingleOrTriple(run);
+            }
+            updateScorecard();
+            updateScore();
         }
-    } else if (ballsThisOver < totalBallsPerOver) {
-        switchStrikeIfSingleOrTriple(run);
-    }
-}
 
         function addWide() {
-            players[currentPlayer].runs++;
-            players[currentPlayer].extras++;
+            players[striker].runs++;
+            players[striker].extras++;
             updateScorecard();
             updateScore();
         }
 
         function addNoBall() {
-            players[currentPlayer].runs++;
-            players[currentPlayer].extras++;
+            players[striker].runs++;
+            players[striker].extras++;
             updateScorecard();
             updateScore();
         }
@@ -221,37 +559,115 @@
         function undoLastAction() {
             // Additional functionality for undoing the last action can be added here
         }
-        
+
+        function updateNonStriker() {
+            if (numPlayers === 1) {
+                nonStriker = 0; // If only one player selected, nonStriker remains 0
+            } else {
+                nonStriker = 2; // If two or more players selected, nonStriker becomes 2
+            }
+        }
+
         function resetMatch() {
             // Reset all player scores and stats
-    for (let player in players) {
-        players[player].runs = 0;
-        players[player].balls = 0;
-        players[player].fours = 0;
-        players[player].sixes = 0;
-        players[player].extras = 0;
+            for (let player in players) {
+                players[player].runs = 0;
+                players[player].balls = 0;
+                players[player].fours = 0;
+                players[player].sixes = 0;
+                players[player].extras = 0;
+            }
+
+            // Reset other game variables
+            wickets = [];
+            overs = 0;
+            ballsThisOver = 0;
+
+            // Reset score and scoreboard display
+            updateScore();
+            updateScorecard();
+
+            // Remove the "on-strike" class from all players
+            let allPlayers = document.querySelectorAll('.on-strike');
+            allPlayers.forEach(player => {
+                player.classList.remove('on-strike');
+            });
+
+            // Add the "on-strike" class to player 1
+            document.getElementById('player1').classList.add('on-strike');
+
+            console.log("RESET")
+        }
+
+        function showWicketsList() {
+            let modal = document.getElementById('wickets-modal');
+            if (modal) {
+                modal.style.display = 'block'; // Show the modal
+            } else {
+                console.warn("Modal element not found.");
+            }
+
+            let closeButton = document.querySelector('.close');
+
+            // Add event listener to the close button
+            if (closeButton) {
+                closeButton.addEventListener('click', function () {
+                    // Get the modal element
+                    let modal = document.getElementById('wickets-modal');
+                    if (modal) {
+                        modal.style.display = 'none'; // Hide the modal
+                    } else {
+                        console.warn("Modal element not found.");
+                    }
+                });
+            } else {
+                console.warn("Close button element not found.");
+            }
+        }
+
+        // Add event listener to the "Show Wickets" button
+        document.getElementById('show-wickets-button').addEventListener('click', showWicketsList);
+
+        function updateConsoleLogViewer() {
+        var consoleLogViewer = document.getElementById('console-log-viewer');
+        consoleLogViewer.innerHTML = '';
+
+        // Get all console log messages
+        var logs = [];
+        for (var i = 0; i < console.logHistory.length; i++) {
+            logs.push(console.logHistory[i]);
+        }
+
+        // Display logs in reverse order (most recent first)
+        logs.reverse();
+
+        // Add logs to the viewer
+        for (var i = 0; i < logs.length; i++) {
+            var logEntry = document.createElement('div');
+            logEntry.textContent = logs[i];
+            consoleLogViewer.appendChild(logEntry);
+        }
     }
 
-    // Reset other game variables
-    wickets = 0;
-    overs = 0;
-    ballsThisOver = 0;
+    // Override console.log to capture log messages
+    console.logHistory = [];
+    console._log = console.log;
+    console.log = function () {
+        // Capture log messages
+        console._log.apply(this, arguments);
+        var message = Array.prototype.join.call(arguments, ' ');
+        console.logHistory.push(message);
 
-    // Reset score and scoreboard display
-    updateScore();
-    updateScorecard();
-
-    // Remove the "on-strike" class from all players
-    let allPlayers = document.querySelectorAll('.on-strike');
-    allPlayers.forEach(player => {
-        player.classList.remove('on-strike');
-    });
-
-    // Add the "on-strike" class to player 1
-    document.getElementById('player1').classList.add('on-strike');
-
-    console.log("RESET")
+        // Limit log history to 10 messages
+        if (console.logHistory.length > 10) {
+            console.logHistory.shift();
         }
+
+        // Update console log viewer
+        updateConsoleLogViewer();
+    };
+
     </script>
 </body>
+
 </html>
