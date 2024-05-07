@@ -303,8 +303,8 @@
         let format = ''
         let numberOfInnings = 2
         let remainingInnings = 2
-        let teamBatting = ''
-        let teamBowling = ''
+        let teamBatting = 'team1'
+        let teamBowling = 'team2'
         let numberOfPlayers = 1;
         let striker = 1;
         let nonStriker = 0;
@@ -613,48 +613,88 @@
         }
 
         function startGame() {
-            console.log('Starting Game');
-            let numOvers = parseInt(document.getElementById('overs').value);
-            numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
-            console.log("numberOfPlayers is " + numberOfPlayers + " and numOvers is " + numOvers);
-            createPlayerObjects("team1");
-            createPlayerObjects("team2");
+    console.log('Starting Game');
 
-            let playerNames = [];
-            for (let i = 1; i <= numberOfPlayers; i++) {
-                let playerName = document.getElementById('player' + i).value;
-                if (playerName.trim() === '') {
-                    playerName = 'Player ' + i;
-                }
-                playerNames.push(playerName);
-            }
+    // Get the number of overs and validate it
+    let numOvers = parseInt(document.getElementById('overs').value);
+    numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
 
-            if (playerNames.length === numberOfPlayers || numberOfPlayers === 1) {
-                for (let i = 1; i <= numberOfPlayers; i++) {
-                    players[i] = { name: playerNames[i - 1], runs: 0, balls: 0, fours: 0, sixes: 0, extras: 0, out: 0 };
-                }
+    // Create player objects for both teams
+    createPlayerObjects("team1");
+    createPlayerObjects("team2");
 
-                document.getElementById('player1').classList.add('on-strike');
-                if (document.getElementById('player2')) {
-                    document.getElementById('player2').classList.add('off-strike');
-                }
+    // Initialize the players array with player names and stats
+    let playerNames = [];
+    let teamBattingPrefix, teamBowlingPrefix;
+    if (teamBatting === 'team1') {
+        teamBattingPrefix = 'team1Player';
+        teamBowlingPrefix = 'team2Player';
+    } else {
+        teamBattingPrefix = 'team2Player';
+        teamBowlingPrefix = 'team1Player';
+    }
 
-                document.getElementById('scorecard').classList.add('visible');
-                document.getElementById('playerNames').classList.add('hidden');
-                document.getElementById('playerSelection').classList.add('hidden');
-                document.getElementById('formatSelection').classList.add('hidden');
-                document.getElementById('startButton').classList.add('hidden');
-                document.getElementById('oversInput').classList.add('hidden');
-                document.getElementById('bouncersInput').classList.add('hidden');
-                document.getElementById('score').classList.remove('hidden');
-                document.getElementById('scorecard').classList.remove('hidden');
-                document.getElementById('runButtons').classList.remove('hidden');
-
-                updateScore();
-                updateScorecard();
-
-            }
+    for (let i = 1; i <= numberOfPlayers; i++) {
+        let playerName = document.getElementById(`${teamBattingPrefix}${i}`).value;
+        if (playerName.trim() === '') {
+            playerName = `Player ${i}`;
         }
+        playerNames.push(playerName);
+    }
+
+    if (playerNames.length === numberOfPlayers || numberOfPlayers === 1) {
+        // Initialize players for the batting team
+        for (let i = 1; i <= numberOfPlayers; i++) {
+            players[`${teamBattingPrefix}${i}`] = {
+                name: playerNames[i - 1],
+                runs: 0,
+                balls: 0,
+                fours: 0,
+                sixes: 0,
+                extras: 0,
+                out: false
+            };
+        }
+
+        // Initialize players for the bowling team
+        for (let i = 1; i <= numberOfPlayers; i++) {
+            players[`${teamBowlingPrefix}${i}`] = {
+                name: document.getElementById(`${teamBowlingPrefix}${i}`).value || `Player ${i}`,
+                runs: 0,
+                balls: 0,
+                fours: 0,
+                sixes: 0,
+                extras: 0,
+                out: false
+            };
+        }
+
+        // Set initial batting and bowling teams
+        teamBatting = teamBattingPrefix;
+        teamBowling = teamBowlingPrefix;
+
+        // Set initial striker and non-striker for batting team
+        striker = 1;
+        nonStriker = 2;
+
+        // Update UI elements
+        document.getElementById('playerSelection').classList.add('hidden');
+        document.getElementById('formatSelection').classList.add('hidden');
+        document.getElementById('startButton').classList.add('hidden');
+        document.getElementById('oversInput').classList.add('hidden');
+        document.getElementById('bouncersInput').classList.add('hidden');
+        document.getElementById('teamSelection').classList.add('hidden');
+        document.getElementById('scorecard').classList.add('visible');
+        document.getElementById('scorecard').classList.remove('hidden');
+        document.getElementById('score').classList.remove('hidden');
+        document.getElementById('runButtons').classList.remove('hidden');
+
+        // Update the score and scorecard displays
+        updateScore();
+        updateScorecard();
+    }
+}
+
 
         function switchOver() {
             switchStrikeIfSingleOrTriple();
