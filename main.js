@@ -760,6 +760,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         else {
             handleChoice('bat');
+            batButton.classList.add('hidden')
+            bowlButton.classList.add('hidden')
         }
     }
 
@@ -775,6 +777,8 @@ document.addEventListener('DOMContentLoaded', function () {
             batSure = false;
         } else {
             handleChoice('bowl');
+            batButton.classList.add('hidden')
+            bowlButton.classList.add('hidden')
         }
     }
 
