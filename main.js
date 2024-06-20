@@ -400,12 +400,6 @@ function startGame() {
         }
     }
 
-    if (teamBattingPlrs > 1) {
-        for (i = 1; i <= teamBattingPlrs; i++) {
-            
-        }
-    }
-
     numberOfPlayers = players.length;
 
     if (playerNames.length === numberOfPlayers || numberOfPlayers === 1) {
