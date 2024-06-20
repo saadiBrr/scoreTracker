@@ -1,0 +1,223 @@
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Roboto';
+    }
+
+    :root {
+        --secondary-margin-bottom: 5px;
+        --secondary-background-color: rgba(30, 30, 30, 0.9);
+        --secondary-align-items: center;
+        --secondary-padding: 5px;
+        --secondary-border: 1px solid #000;
+        --secondary-border-radius: 5px;
+        --label-margin-right: 10px;
+        /* Define a variable for the label margin */
+        --text-color: #e1e1e1;
+        /* Define a variable for text color */
+    }
+
+    .secondary {
+        margin-bottom: var(--secondary-margin-bottom);
+        background-color: var(--secondary-background-color);
+        display: var(--secondary-display);
+        align-items: var(--secondary-align-items);
+        padding: var(--secondary-padding);
+        border: var(--secondary-border);
+        border-radius: var(--secondary-border-radius);
+        color: var(--text-color);
+    }
+
+    .secondary label,
+    .secondary input,
+    .secondary button {
+        color: var(--text-color);
+    }
+
+    .secondary input,
+    .secondary button {
+        background-color: var(--secondary-background-color);
+        border: none;
+        color: var(--text-color);
+        padding: 5px;
+        border-radius: 5px;
+        margin-bottom: var(--secondary-margin-bottom);
+    }
+
+    .scorecard {
+        border: 1px solid #413d46;
+        padding: 5px;
+        margin-top: 10px;
+        display: none;
+        background-color: rgba(30, 30, 30, 0.9);
+        border-radius: 5px;
+    }
+
+    .scorecard.visible {
+        display: block;
+        /* Show the scorecard when the "visible" class is added */
+    }
+
+    #score {
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .on-strike {
+        border: 2px solid lightskyblue;
+    }
+
+    .off-strike {
+        border: 2px solid gray;
+    }
+
+    .out {
+        border: 2px solid orangered;
+    }
+
+    #runButtons button {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin: 5px;
+        color: #E0E0E0;
+        background-color: rgba(45, 45, 45, 0.9);
+    }
+
+    /* Default styles */
+    #playerNames div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        /* Add margin between stacked elements */
+    }
+
+    #playerNames label {
+        margin-right: 10px;
+        margin-bottom: 0;
+        /* Reset bottom margin for labels */
+    }
+
+    #playerNames input,
+    #playerNames select {
+        margin-bottom: 0;
+        /* Reset bottom margin for inputs and selects */
+    }
+
+    #team1PlayerNames,
+    #team2PlayerNames {
+        margin-bottom: 5px;
+        flex-direction: column;
+    }
+
+    /* Media query for screens smaller than or equal to 600px (typical mobile devices) */
+    @media (max-width: 600px) {
+        #playerNames div {
+            flex-direction: column;
+            /* Stack elements vertically */
+            align-items: flex-start;
+            /* Align items to the start */
+            margin-bottom: 20px;
+            /* Increase margin between stacked elements */
+        }
+
+        #playerNames label {
+            margin-right: 0;
+            /* Remove right margin for labels */
+            margin-bottom: 5px;
+            /* Add bottom margin for labels */
+            display: block;
+            /* Ensure label is displayed as a block element */
+        }
+    }
+
+    /* Added styles */
+    .playerInfo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .playerInfo label {
+        margin-right: 10px;
+        margin-bottom: 0;
+    }
+
+    .playerInfo input,
+    .playerInfo select {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+        .playerInfo {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .playerInfo label {
+            margin-right: 0;
+            margin-bottom: 5px;
+            display: block;
+        }
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 1;
+        /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black w/ opacity */
+    }
+
+    /* Modal content styles */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        /* 80% width */
+    }
+
+ /* Close button styles */
+.close-container {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .team-player-selection {
+        margin-bottom:
+            15px;
+    }
