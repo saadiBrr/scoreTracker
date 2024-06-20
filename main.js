@@ -2,8 +2,10 @@ let format = ''
 let numberOfInnings = 2
 let remainingInnings = 2
 let players = [];
-let team1PlrCount;
-let team2PlrCount;
+let playerCounts = {
+team1PlrCount: 0,
+team2PlrCount: 0
+};
 let teamBattingPrefix;
 let teamBowlingPrefix;
 let numberOfPlayers = 1;
@@ -124,13 +126,14 @@ function createPlayerObjects(team) {
         let playerElement = byId(`${team}Player${i}`);
         let wicketsElement = byId(`${team}Wickets${i}`);
         if (playerElement && wicketsElement) {
-            let playerName = playerElement.value;
+            let playerName = playerElement.value.trim();
             let playerWickets = parseInt(wicketsElement.value);
-            if (playerName.trim() === '') {
+            if (playerName === '') {
                 playerName = `Player ${i}`;
             }
-            let teamXCount = `${team}PlrCount`
-            teamXCount++
+
+            // Update player count dynamically
+            playerCounts[`${team}PlrCount`]++;
 
             players[`${team}Player${i}`] = {
                 name: playerName,
@@ -145,7 +148,9 @@ function createPlayerObjects(team) {
             };
         }
     }
+    console.log(`${team} Player Count = ${playerCounts[`${team}PlrCount`]}`)
 }
+
 
 function updateScorecard() {
     let scorecard = byId('scorecard');
@@ -458,6 +463,7 @@ function switchOver() {
 }
 
 function switchStrike() {
+
     if (`${teamBatting}PlrCount` === 1) {
         console.log("Only one player selected. Cannot switch strike.");
         return; // Exit function if only one player
@@ -662,6 +668,14 @@ function showWicketsList() {
     }
 }
 
+function forceRotate() {
+    if (gameEnded) return;
+    let yes = confirm("Are you sure you want to force rotate strike?")
+    if (yes) {
+        switchStrike();
+    }
+}
+
 const showWicketsButton = byId('show-wickets-button');
 const consoleLogViewer = byId('console-log-viewer');
 
@@ -719,14 +733,6 @@ console.log = function (...args) {
     // Update the console log viewer whenever a new log message is added
     updateConsoleLogViewer();
 };
-
-function forceRotate() {
-    if (gameEnded) return;
-    let yes = confirm("Are you sure you want to force rotate strike?")
-    if (yes) {
-        switchStrike();
-    }
-}
 
 document.addEventListener('DOMContentLoaded', function () {
 
