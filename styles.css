@@ -69,15 +69,22 @@
     }
 
     .on-strike {
-        border: 2px solid lightskyblue;
+        border: 2px solid lightcyan;
+        width: fit-content;
+        padding: 2px;
     }
 
     .off-strike {
         border: 2px solid gray;
+        width: fit-content;
+        padding: 2px;
     }
 
     .out {
         border: 2px solid orangered;
+        width: fit-content;
+        padding: 2px;
+        color: gray
     }
 
     #runButtons button {
