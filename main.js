@@ -640,9 +640,13 @@ function addBouncer() {
     if (gameEnded) return;
     bouncersThisOver++;
     if (bouncersThisOver > maxBouncersAllowed) {
-        addNoBall()
+        addNoBall();
+    } else {
+        players[teamBatting][striker].balls++
     }
     byId('bouncersThisOver').textContent = `Bouncers this over: ${bouncersThisOver}`;
+    updateScore();
+    updateScorecard();
 }
 
 function undoLastAction() {
