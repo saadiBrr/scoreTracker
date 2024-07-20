@@ -128,62 +128,7 @@ function updatePlayerNames(team, selectedPlayers) {
     }
 }
 
-function createPlayerObjects(team) {
-    // Clear the team array to remove any existing players
-    players[team] = [];
 
-    // Get the number of players for the team
-    const numberOfPlayersInTeam = parseInt(byId(`${team}Players`).value);
-
-    // Debug: Check number of players
-    console.log(`Creating players for team ${team}. Number of players: ${numberOfPlayersInTeam}`);
-
-    // Create player objects for the team
-    for (let i = 1; i <= numberOfPlayersInTeam; i++) {
-        let playerElement = byId(`${team}Player${i}`);
-        let wicketsElement = byId(`${team}Wickets${i}`);
-
-        // Debug: Check elements and their values
-        console.log(`Player Element ${i}:`, playerElement ? playerElement.value : 'null');
-        console.log(`Wickets Element ${i}:`, wicketsElement ? wicketsElement.value : 'null');
-
-        if (playerElement && wicketsElement) {
-            let playerName = playerElement.value.trim();
-            let playerWickets = parseInt(wicketsElement.value);
-
-            // Default player name if not provided
-            if (playerName === '') {
-                playerName = `Player ${i}`;
-            }
-
-            playerCounts[team] = playerCounts[team] + 1; // Initialize playerCounts[team] if not already
-
-            // Create a player object
-            let player = {
-                name: playerName,
-                totalWickets: playerWickets,
-                wicketsRemaining: playerWickets,
-                runs: 0,
-                balls: 0,
-                fours: 0,
-                sixes: 0,
-                extras: 0,
-                out: false
-            };
-
-            // Debug: Check player object before pushing
-            console.log(`Created player ${i}:`, player);
-
-            // Add the player to the respective team's array
-            players[team].push(player);
-        } else {
-            // Debug: Missing elements
-            console.warn(`Missing player or wickets element for index ${i}`);
-        }
-    }
-    // Debug: Final players array for the team
-    console.log(`Final players array for team ${team}:`, players[team]);
-}
 
 function updateScorecard() {
     let scorecard = byId('scorecard');
@@ -437,7 +382,7 @@ function startGame() {
 
     if (!teamBatting || !teamBowling) {
         teamBatting = 'team1';
-        teamBowling = 'team2'
+        teamBowling = 'team2';
     }
 
     let teamBattingPlrs;
@@ -447,15 +392,96 @@ function startGame() {
     let numOvers = parseInt(byId('overs').value);
     numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
 
-    createPlayerObjects('team1');
-    createPlayerObjects('team2');
+    // Functionality from createPlayerObjects for team1
+    players['team1'] = [];
+    const numberOfPlayersInTeam1 = parseInt(byId('team1Players').value);
+    console.log(`Creating players for team1. Number of players: ${numberOfPlayersInTeam1}`);
+
+    for (let i = 1; i <= numberOfPlayersInTeam1; i++) {
+        let playerElement = byId(`team1Player${i}`);
+        let wicketsElement = byId(`team1Wickets${i}`);
+
+        console.log(`Player Element ${i}:`, playerElement ? playerElement.value : 'null');
+        console.log(`Wickets Element ${i}:`, wicketsElement ? wicketsElement.value : 'null');
+
+        if (playerElement && wicketsElement) {
+            let playerName = playerElement.value.trim();
+            let playerWickets = parseInt(wicketsElement.value);
+
+            if (playerName === '') {
+                playerName = `Player ${i}`;
+            }
+
+            playerCounts['team1'] = playerCounts['team1'] + 1;
+
+            let player = {
+                name: playerName,
+                totalWickets: playerWickets,
+                wicketsRemaining: playerWickets,
+                runs: 0,
+                balls: 0,
+                fours: 0,
+                sixes: 0,
+                extras: 0,
+                out: false
+            };
+
+            console.log(`Created player ${i}:`, player);
+            players['team1'].push(player);
+        } else {
+            console.warn(`Missing player or wickets element for index ${i}`);
+        }
+    }
+    console.log(`Final players array for team1:`, players['team1']);
+
+    // Functionality from createPlayerObjects for team2
+    players['team2'] = [];
+    const numberOfPlayersInTeam2 = parseInt(byId('team2Players').value);
+    console.log(`Creating players for team2. Number of players: ${numberOfPlayersInTeam2}`);
+
+    for (let i = 1; i <= numberOfPlayersInTeam2; i++) {
+        let playerElement = byId(`team2Player${i}`);
+        let wicketsElement = byId(`team2Wickets${i}`);
+
+        console.log(`Player Element ${i}:`, playerElement ? playerElement.value : 'null');
+        console.log(`Wickets Element ${i}:`, wicketsElement ? wicketsElement.value : 'null');
+
+        if (playerElement && wicketsElement) {
+            let playerName = playerElement.value.trim();
+            let playerWickets = parseInt(wicketsElement.value);
+
+            if (playerName === '') {
+                playerName = `Player ${i}`;
+            }
+
+            playerCounts['team2'] = playerCounts['team2'] + 1;
+
+            let player = {
+                name: playerName,
+                totalWickets: playerWickets,
+                wicketsRemaining: playerWickets,
+                runs: 0,
+                balls: 0,
+                fours: 0,
+                sixes: 0,
+                extras: 0,
+                out: false
+            };
+
+            console.log(`Created player ${i}:`, player);
+            players['team2'].push(player);
+        } else {
+            console.warn(`Missing player or wickets element for index ${i}`);
+        }
+    }
+    console.log(`Final players array for team2:`, players['team2']);
 
     let teamBattingPrefix = players[teamBatting];
     let teamBowlingPrefix = players[teamBowling];
 
-    teamBattingPlrs = playerCounts[teamBatting]
-    teamBowlingPlrs = playerCounts[teamBowling]
-    console.log(`TeamBattingPlrs: ${teamBattingPlrs}, teamBowlingPlrs: ${teamBowlingPlrs}`)
+    teamBattingPlrs = playerCounts[teamBatting];
+    teamBowlingPlrs = playerCounts[teamBowling];
+    console.log(`TeamBattingPlrs: ${teamBattingPlrs}, teamBowlingPlrs: ${teamBowlingPlrs}`);
 
     for (let i = 1; i <= teamBattingPlrs; i++) {
         const element = byId(`${teamBatting}Player${i}`);
@@ -471,8 +497,7 @@ function startGame() {
     numberOfPlayers = (players[teamBatting].length + players[teamBowling].length);
 
     if (playerNames.length === teamBattingPlrs || teamBattingPlrs === 1) {
-        // Initialize players for the batting team
-        for (let i = 0; i <= playerCounts[teamBatting]; i++) {
+        for (let i = 1; i <= playerCounts[teamBatting]; i++) {
             teamBattingPrefix[i] = {
                 name: playerNames[i],
                 id: i,
@@ -485,7 +510,6 @@ function startGame() {
             };
         }
 
-        // Initialize players for the bowling team
         for (let i = 1; i <= playerCounts[teamBatting]; i++) {
             const element = byId(`${teamBowling}Player${i}`);
             let playerName = element ? element.value : `Player ${i}`;
@@ -501,7 +525,6 @@ function startGame() {
             };
         }
 
-        // Update UI elements
         byId('playerSelection').classList.add('hidden');
         byId('playerSelection').style.display = "none";
         byId('formatSelection').classList.add('hidden');
@@ -513,7 +536,6 @@ function startGame() {
         byId('score').classList.remove('hidden');
         byId('runButtons').classList.remove('hidden');
 
-        // Update the non-striker, score and scorecard displays
         updateNonStriker();
         updateScore();
         updateScorecard();
