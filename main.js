@@ -128,8 +128,6 @@ function updatePlayerNames(team, selectedPlayers) {
     }
 }
 
-
-
 function updateScorecard() {
     let scorecard = byId('scorecard');
     scorecard.style.fontSize = '22px';
@@ -412,7 +410,10 @@ function startGame() {
                 playerName = `Player ${i}`;
             }
 
-            playerCounts['team1'] = playerCounts['team1'] + 1;
+            if (!playerCounts['team1']) {
+                playerCounts['team1'] = 0;
+            }
+            playerCounts['team1'] += 1;
 
             let player = {
                 name: playerName,
@@ -454,7 +455,10 @@ function startGame() {
                 playerName = `Player ${i}`;
             }
 
-            playerCounts['team2'] = playerCounts['team2'] + 1;
+            if (!playerCounts['team2']) {
+                playerCounts['team2'] = 0;
+            }
+            playerCounts['team2'] += 1;
 
             let player = {
                 name: playerName,
@@ -498,8 +502,8 @@ function startGame() {
 
     if (playerNames.length === teamBattingPlrs || teamBattingPlrs === 1) {
         for (let i = 1; i <= playerCounts[teamBatting]; i++) {
-            teamBattingPrefix[i] = {
-                name: playerNames[i],
+            teamBattingPrefix[i - 1] = {  // Adjusted index to i - 1
+                name: playerNames[i - 1],
                 id: i,
                 runs: 0,
                 balls: 0,
@@ -510,10 +514,10 @@ function startGame() {
             };
         }
 
-        for (let i = 1; i <= playerCounts[teamBatting]; i++) {
+        for (let i = 1; i <= playerCounts[teamBowling]; i++) {
             const element = byId(`${teamBowling}Player${i}`);
             let playerName = element ? element.value : `Player ${i}`;
-            teamBowlingPrefix[i] = {
+            teamBowlingPrefix[i - 1] = {  // Adjusted index to i - 1
                 name: playerName,
                 id: i,
                 runs: 0,
@@ -542,6 +546,7 @@ function startGame() {
         getRemainingPlayers();
     }
 }
+
 
 function switchOver() {
     switchStrikeIfSingleOrTriple();
