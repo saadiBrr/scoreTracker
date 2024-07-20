@@ -313,7 +313,7 @@ function addWicket() {
     let player = players[team][striker];
 
     // Decrement wickets remaining for the striker
-    let wicketsRemainingSelect = byId(`${team}Wickets${striker}`);
+    let wicketsRemainingSelect = byId(`${team}Wickets${player.id}`);
     let wicketsRemaining = parseInt(wicketsRemainingSelect.value);
     wicketsRemaining--;
 
@@ -475,7 +475,7 @@ function startGame() {
         for (let i = 0; i <= playerCounts[teamBatting]; i++) {
             teamBattingPrefix[i] = {
                 name: playerNames[i],
-                id: [i],
+                id: i,
                 runs: 0,
                 balls: 0,
                 fours: 0,
@@ -486,11 +486,12 @@ function startGame() {
         }
 
         // Initialize players for the bowling team
-        for (let i = 0; i <= playerCounts[teamBatting]; i++) {
+        for (let i = 1; i <= playerCounts[teamBatting]; i++) {
             const element = byId(`${teamBowling}Player${i}`);
             let playerName = element ? element.value : `Player ${i}`;
             teamBowlingPrefix[i] = {
                 name: playerName,
+                id: i,
                 runs: 0,
                 balls: 0,
                 fours: 0,
@@ -696,7 +697,7 @@ function updateNonStriker() {
 function resetMatch() {
     if (confirm("Are you sure you want to reset the match? Settings will be saved.")) {
         // Reset all player scores and stats
-        for (let i = 1; i <= playerCounts[teamBatting]; i++) {
+        for (let i = 0; i <= playerCounts[teamBatting]; i++) {
 
             let player = players[teamBatting][i];
             if (player) {
