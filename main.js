@@ -347,8 +347,8 @@ function addWicket() {
 
 function markPlayerOut(playerKey) {
     // Get the index of the player in the team's array
-    let playerNumber = players[teamBatting].indexOf(playerKey);
-    let playerId = `${teamBatting}Player${playerNumber}`;
+    let playerNumber = playerKey.id;
+    let playerId = `${teamBatting}Player${playerNumber + 1}`;
 
     // Set the player's out status to true
     playerKey.out = true;
@@ -662,8 +662,10 @@ function getRemainingPlayers() {
 
     for (let i = 1; i <= playerCounts[teamBatting]; i++) {
         let wicketsRemaining = parseInt(byId(`${teamBatting}Wickets${i}`).value);
+        console.log(`wicketsRemaining for ${teamBatting}Wickets${i} = ${wicketsRemaining}`)
         if (wicketsRemaining > 0) {
-            remainingPlayers = players[teamBatting][i].name;
+            remainingPlayers.push(players[teamBatting][i-1].name);
+            console.log(`Found remaining player: ${players[teamBatting][i-1]}. DEBUG: ${players[teamBatting][i]}`)
         }
     }
     return remainingPlayers;
