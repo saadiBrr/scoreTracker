@@ -528,6 +528,8 @@ function startGame() {
             };
         }
 
+        maxBouncersAllowed = parseInt(byId('bouncers').value)
+
         byId('playerSelection').classList.add('hidden');
         byId('playerSelection').style.display = "none";
         byId('formatSelection').classList.add('hidden');
@@ -847,7 +849,11 @@ if (tossCloseButton) {
     console.warn("Toss close button element not found.");
 }
 
-function updateConsoleLogViewer() {
+function updateConsoleLogViewer(enabled) {
+
+    if (!enabled) return;
+
+    byId('console-log-viewer').classList.remove('hidden')
 
     consoleLogViewer.innerHTML = '';
 
