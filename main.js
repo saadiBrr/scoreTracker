@@ -341,8 +341,7 @@ function addWicket() {
     }
 
     // Update UI to display wickets
-    updateScore();
-    updateScorecard();
+    updateGameUI();
 }
 
 function markPlayerOut(playerKey) {
@@ -541,8 +540,7 @@ function startGame() {
         byId('runButtons').classList.remove('hidden');
 
         updateNonStriker();
-        updateScore();
-        updateScorecard();
+        updateGameUI();
         getRemainingPlayers();
     }
 }
@@ -600,8 +598,7 @@ function switchStrike() {
                 return; // Exit function to prevent further warnings
             }
         }
-        updateScorecard();
-        updateScore(); // Call updateScore() here
+        updateGameUI();
     }, 0);
 }
 
@@ -653,19 +650,30 @@ function addRun(run) {
         }
     }
 
-    updateScorecard();
-    updateScore();
+    updateGameUI();
 }
 
-// Function to count the number of players with wickets remaining
+// Function to fetch  the number of players with wickets remaining
 function getRemainingPlayers() {
 
-    for (let i = 1; i <= playerCounts[teamBatting]; i++) {
+    console.log(`Team Batting: ${teamBatting}, Player Count: ${playerCounts[teamBatting]}`);
+
+    for (let i = 1; i <= playerCounts[teamBatting]; i++) { // Correct loop condition
         let wicketsRemaining = parseInt(byId(`${teamBatting}Wickets${i}`).value);
-        console.log(`wicketsRemaining for ${teamBatting}Wickets${i} = ${wicketsRemaining}`)
+
+        let player = players[teamBatting][i - 1];
+        if (!player) {
+            console.warn(`Player index ${i - 1} does not exist.`);
+            continue; // Skip iteration if player is undefined
+        }
+
+        console.log(`Checking Player ${i}, Wickets Remaining: ${wicketsRemaining}`);
+
         if (wicketsRemaining > 0) {
-            remainingPlayers.push(players[teamBatting][i-1].name);
-            console.log(`Found remaining player: ${players[teamBatting][i-1]}. DEBUG: ${players[teamBatting][i]}`)
+            remainingPlayers.push(player.name); // Or push player object if needed
+            console.log(`Found remaining player: ${player.name}`);
+        } else {
+            console.log(`${player.name} has no wickets remaining.`);
         }
     }
     return remainingPlayers;
@@ -675,8 +683,7 @@ function addWide() {
     if (gameEnded) return;
     players[teamBatting][striker].runs++;
     players[teamBatting][striker].extras++;
-    updateScorecard();
-    updateScore();
+    updateGameUI();
 }
 
 function addNoBall() {
@@ -687,8 +694,7 @@ function addNoBall() {
     isFreeHit = true;
     players[teamBatting][striker].runs++;
     players[teamBatting][striker].extras++;
-    updateScorecard();
-    updateScore();
+    updateGameUI();
 }
 
 function handleFreeHit() {
@@ -707,8 +713,7 @@ function addBouncer() {
         players[teamBatting][striker].balls++
     }
     byId('bouncersThisOver').textContent = `Bouncers this over: ${bouncersThisOver}`;
-    updateScore();
-    updateScorecard();
+    updateGameUI();
 }
 
 function undoLastAction() {
@@ -748,8 +753,7 @@ function resetMatch() {
         gameEnded = false;
 
         // Reset score and scorecard display
-        updateScore();
-        updateScorecard();
+        updateGameUI();
 
         // Add the "on-strike" class to player 1 and "off-strike" to player 2 of the batting team
         let player1Element = document.querySelector(`#scorecard #${teamBatting}Player1`);
@@ -802,6 +806,11 @@ function showWicketsList() {
     } else {
         console.warn("Close button element not found.");
     }
+}
+
+function updateGameUI() {
+    updateScore();
+    updateScorecard();
 }
 
 function forceRotate() {
