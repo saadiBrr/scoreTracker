@@ -1,7 +1,7 @@
 
 let format = ''
-let maxInnings = 2
-let remainingInnings = 2
+let maxInnings;
+let remainingInnings;
 let players = {
     team1: [],
     team2: []
@@ -38,10 +38,10 @@ let totalBalls = {
 let remainingPlayers = [];
 let bouncersThisOver = 0;
 let maxBouncersAllowed = 1;
-let isWide = false
-let isNoBall = false
-let isFreeHit = false
-let gameEnded = false
+let isWide = false;
+let isNoBall = false;
+let isFreeHit = false;
+let gameEnded = false;
 let target;
 // This is for toss announcement update
 let max;
@@ -53,17 +53,19 @@ function byId(id) {
 
 function updateFormat() {
 
-    format = byId('selectedFormat').value
+    format = byId('selectedFormat').value;
 
     byId('teamSelection').classList.remove('hidden');
 
     if (format === "Test") {
-        maxInnings = 4
-        remainingInnings = 4
+        byId('inningsInput').classList.remove('hidden');
+        maxInnings = parseInt(byId('innings').value) === 1 ? 2 : 4;
+        remainingInnings = maxInnings;
     }
     else {
-        maxInnings = 2
-        remainingInnings = 2
+        maxInnings = 2;
+        remainingInnings = 2;
+        byId('inningsInput').classList.add('hidden');
     }
 }
 
@@ -155,6 +157,10 @@ function updateScorecard() {
         } else if (nonStriker === i) {
             className = 'off-strike';
         }
+        if (player.out) {
+            className = 'out'
+        }
+        
         scorecard.innerHTML += `<p id="${playerKey}" class="${className}">${player.name}: ${player.runs} (${player.balls}) [4s: ${player.fours}, 6s: ${player.sixes}, Extras: ${player.extras}, Strike Rate: ${strikeRate}]</p>`;
     }
 }
@@ -849,7 +855,7 @@ function resetInnings() {
             playerElements[3].classList.remove('out');
         }
         console.warn("Innings has been reset");
-    } 
+    }
 }
 
 function showWicketsList() {

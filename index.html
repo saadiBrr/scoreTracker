@@ -109,19 +109,14 @@
         </div>
 
         <div id="inningsInput" style="margin-bottom: 5px;" class="hidden">
-
-            <label for="innings">Number of Innings:</label>
-            <select
-            style="background-color: rgba(45, 45, 45, 0.9); padding: 5px; border: 1px solid #413d46; border-radius: 5px; margin-top: 5px; color: #e1e1e1; width: 32px;"
-            id="innings">
-            <option>2</option>
-            <option>4</option>
-        </select>
+            <label for="innings">Number of Innings per Team:</label>
+            <input type="number"
+                style="background-color: rgba(45, 45, 45, 0.9); padding: 5px; border: 1px solid #413d46; border-radius: 5px; color: #e1e1e1; width: 25px;"
+                id="innings" max="2" min="1" value="1" onchange="updateFormat()">
         </div>
 
-
         <div id="bouncersInput" style="margin-bottom: 5px;">
-            <label for="overs">Number of Bouncers Per Over:</label>
+            <label for="bouncers">Number of Bouncers per Over:</label>
             <input type="number"
                 style="background-color: rgba(45, 45, 45, 0.9); padding: 5px; border: 1px solid #413d46; border-radius: 5px; color: #e1e1e1; width: 25px;"
                 id="bouncers" max="2" min="0" value="1">
