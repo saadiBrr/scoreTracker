@@ -361,30 +361,36 @@ function addWicket() {
     };
 
     wickets[teamBatting].push(wicket);
+    updateGameUI();
 
     let remainingPlayers = getRemainingPlayers().filter(player => player && !player.out);
 
     if (remainingPlayers.length > 1) {
         // Find the next striker who is not the non-striker
-        let nextStriker = null;
-        for (let i = 0; i < playerCounts[teamBatting]; i++) {
-            if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
-                nextStriker = i;
-                console.log(`NextStriker = ${nextStriker}`)
-                break;
-            }
-        }
-
-        if (nextStriker !== null) {
-            striker = nextStriker;
+        if (remainingWickets > 0) {
+            return;
         } else {
-            striker = nonStriker;
-            nonStriker = null;
+            let nextStriker = null;
+            for (let i = 0; i < playerCounts[teamBatting]; i++) {
+                if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
+                    nextStriker = i;
+                    console.log(`NextStriker = ${nextStriker}`)
+                    break;
+                }
+            }
+
+            if (nextStriker !== null) {
+                striker = nextStriker;
+            } else {
+                striker = nonStriker;
+                nonStriker = null;
+            }
         }
     } else if (getRemainingPlayers().filter(player => player && !player.out).length === 1) {
         let playerIndex = players[teamBatting].findIndex(player => remainingPlayers.includes(player.name));
         striker = playerIndex;
         nonStriker = null;
+
     } else {
         // If no players are left, end the innings
         let confirmation = confirm('No wickets left. Do you want to end the innings?');
