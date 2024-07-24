@@ -701,16 +701,17 @@ function addRun(run) {
 
 function getRemainingPlayers() {
 
-    for (let i = 1; i <= playerCounts[teamBatting]; i++) {
-        let wicketsRemaining = parseInt(byId(`${teamBatting}Wickets${i}`).value);
+    for (let i = 0; i < playerCounts[teamBatting]; i++) {
 
-        let player = players[teamBatting][i - 1];
+        let player = players[teamBatting][i];
         if (!player) {
-            console.warn(`Player index ${i - 1} does not exist.`);
+            console.warn(`Player index ${i} does not exist.`);
             continue; // Skip iteration if player is undefined
         }
 
-        if (wicketsRemaining > 0) {
+        let remainingWickets = player.remainingWickets;
+
+        if (remainingWickets > 0) {
             if (!remainingPlayers.includes(player.name)) {
                 remainingPlayers.push(player.name);
             }
