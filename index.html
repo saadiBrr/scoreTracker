@@ -153,12 +153,12 @@
         <button onclick="addNoBall()">Nb</button>
         <button onclick="addBouncer()">Bouncer</button>
         <button onclick="addWicket()">Wicket</button>
-        <button onclick="undoLastAction()">Undo</button>
         <button onclick="forceRotate()">Force Rotate</button>
+        <button id='undoButton'onclick="undoLastAction()">Undo</button>
         <button id="show-wickets-button">Show Wickets</button>
-        <button onclick="resetInnings()">Reset</button>
-        <button onclick="endInnings()">Declare</button>
-        <button onclick="endGame()">End Game</button>
+        <button id='resetInningsButton', onclick="resetInnings()">Reset</button>
+        <button id='endInningsButton', onclick="endInnings()">Declare</button>
+        <button id='endGameButton', onclick="endGame()">End Game</button>
     </div>
 
     <div id="wickets-modal" class="modal">
