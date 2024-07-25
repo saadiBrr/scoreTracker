@@ -41,6 +41,7 @@ let isWide = false;
 let isNoBall = false;
 let isFreeHit = false;
 let gameEnded = false;
+let rotateStrikeOnWicket = false;
 let target;
 // This is for toss announcement update
 let max;
@@ -130,11 +131,17 @@ function updatePlayerNames(team, selectedPlayers) {
         byId('matchRulesInput').classList.remove('hidden');
         byId('startButton').classList.remove('hidden');
         byId('tossButton').classList.remove('hidden')
+        if (team1SelectedPlayers > 1 || team2SelectedPlayers > 1) {
+            byId('rotationCheck').classList.remove('hidden')
+        } else {
+            byId('rotationCheck').classList.add('hidden')
+        }
     } else {
         // Hide the overs and bouncers inputs if any of the teams doesn't have players selected
         byId('matchRulesInput').classList.add('hidden');
         byId('startButton').classList.add('hidden');
         byId('tossButton').classList.add('hidden')
+        byId('rotationCheck').classList.add('hidden')
     }
 }
 
