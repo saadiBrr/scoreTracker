@@ -42,8 +42,8 @@ let isNoBall = false;
 let isFreeHit = false;
 let gameEnded = false;
 let rotateStrikeOnWicket = false;
-let sixEnabled = true
-let target;
+let sixesDisabled = false;
+let target = totalRuns[teamBatting] + 1;
 // This is for toss announcement update
 let max;
 
@@ -55,6 +55,7 @@ function byId(id) {
 function updateFormat() {
 
     format = byId('selectedFormat').value;
+    console.log("Format changed to:", format); // Debugging line
 
     byId('teamSelection').classList.remove('hidden');
 
@@ -62,13 +63,13 @@ function updateFormat() {
         byId('inningsInput').classList.remove('hidden');
         maxInnings = parseInt(byId('innings').value) === 1 ? 2 : 4;
         remainingInnings = maxInnings;
-        sixEnabled = false;
-        byId('sixButton').classList.add('hidden')
+        byId('sixEnabledCheckboxContainer').classList.remove('hidden'); // Make the checkbox visible
     }
-    else {
+    else if (format === "T20") {
         maxInnings = 2;
         remainingInnings = 2;
         byId('inningsInput').classList.add('hidden');
+        byId('sixEnabledCheckboxContainer').classList.add('hidden'); // Hide the checkbox
     }
 }
 
@@ -99,7 +100,6 @@ function updatePlayerNames(team, selectedPlayers) {
     // Create input fields for player names and wickets if there are selected players
     let playerNamesHTML = '';
     let teamName = byId(`${team}Name`).value
-    let teamNumber = team.slice(4)
     if (selectedPlayers > 0) {
         for (let i = 1; i <= selectedPlayers; i++) {
             playerNamesHTML +=
@@ -133,18 +133,21 @@ function updatePlayerNames(team, selectedPlayers) {
         // Both teams have at least one player selected, show the overs and bouncers inputs
         byId('matchRulesInput').classList.remove('hidden');
         byId('startButton').classList.remove('hidden');
-        byId('tossButton').classList.remove('hidden')
+        byId('tossButton').classList.remove('hidden');
+        if (format === 'Test') {
+            byId('sixEnabledCheckboxContainer').classList.remove('hidden');
+        }
         if (team1SelectedPlayers > 1 || team2SelectedPlayers > 1) {
-            byId('rotateOnStrike').classList.remove('hidden')
+            byId('rotationCheckboxContainer').classList.remove('hidden')
         } else {
-            byId('rotateOnStrike').classList.add('hidden')
+            byId('rotationCheckboxContainer').classList.add('hidden')
         }
     } else {
         // Hide the overs and bouncers inputs if any of the teams doesn't have players selected
         byId('matchRulesInput').classList.add('hidden');
         byId('startButton').classList.add('hidden');
         byId('tossButton').classList.add('hidden')
-        byId('rotateOnStrike').classList.add('hidden')
+        byId('rotationCheckboxContainer').classList.add('hidden')
     }
 }
 
@@ -272,6 +275,7 @@ function endInnings() {
     if (remainingInnings > 0 && (getRemainingPlayers().length == 0 || j == true)) {
         console.log(`No wickets remaining. Switching sides. Remaining Innings: ${remainingInnings}, getRemainingPlayers().length = ${getRemainingPlayers().length}, j = ${j}`)
         remainingInnings--;
+        max = 0;
         if (remainingInnings !== 0) {
             let temp = teamBatting
             teamBatting = teamBowling
@@ -279,15 +283,14 @@ function endInnings() {
             striker = 0
             if (players[teamBatting][1]) {
                 nonStriker = 1
-            } else
-                return;
+            }
         }
-
     } else if (remainingInnings > 0 && getRemainingPlayers().length > 0) {
         let confirmation = confirm('Are you sure you want to declare?')
         if (confirmation) {
-            console.log(`${byId(`${teamBatting}Name`).value} has declared their innings at ${totalRuns[teamBatting]}/${z}`)
+            console.log(`${byId(`${teamBatting}Name`).value} have declared their innings at ${totalRuns[teamBatting]}/${z}`)
             remainingInnings--;
+            max = 0;
             if (remainingInnings !== 0) {
                 let temp = teamBatting
                 teamBatting = teamBowling
@@ -295,11 +298,11 @@ function endInnings() {
                 striker = 0
                 if (players[teamBatting][1]) {
                     nonStriker = 1
-                } else
-                    return;
+                }
             }
         }
     }
+
     byId('endInningsButton').innerHTML = 'Declare'
     max = 0;
     updateGameUI();
@@ -600,7 +603,11 @@ function startGame() {
         }
     }
 
-    maxBouncersAllowed = parseInt(byId('bouncers').value)
+    maxBouncersAllowed = parseInt(byId('bouncers').value);
+    target = totalRuns[teamBatting] + 1;
+    if (sixesDisabled) {
+        byId('sixButton').classList.add('hidden');
+    }
 
     byId('playerSelection').classList.add('hidden');
     byId('playerSelection').style.display = "none";
