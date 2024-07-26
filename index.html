@@ -122,7 +122,7 @@
                 id="bouncers" max="2" min="0" value="1">
         </div>
 
-        <label id="rotationCheck" style="margin-bottom: 5px; display: flex; align-items: center;" class="container hidden">Rotate Strike after Wicket:<input type="checkbox">
+        <label id="rotateOnStrike" style="margin-bottom: 5px; display: flex; align-items: center;" class="container hidden">Rotate Strike after Wicket:<input type="checkbox" onchange="rotateStrikeOnWicket = this.checked">
             <span class="checkmark" id="rotateStrikeCheck"></span>
         </label>
 
@@ -155,7 +155,7 @@
         <button onclick="addRun(2)">2</button>
         <button onclick="addRun(3)">3</button>
         <button onclick="addRun(4)">4</button>
-        <button onclick="addRun(6)">6</button>
+        <button id="sixButton" class="" onclick="addRun(6)">6</button>
         <button onclick="addWide()">Wd</button>
         <button onclick="addNoBall()">Nb</button>
         <button onclick="addBouncer()">Bouncer</button>

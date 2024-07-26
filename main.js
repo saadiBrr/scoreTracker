@@ -42,6 +42,7 @@ let isNoBall = false;
 let isFreeHit = false;
 let gameEnded = false;
 let rotateStrikeOnWicket = false;
+let sixEnabled = true
 let target;
 // This is for toss announcement update
 let max;
@@ -61,6 +62,8 @@ function updateFormat() {
         byId('inningsInput').classList.remove('hidden');
         maxInnings = parseInt(byId('innings').value) === 1 ? 2 : 4;
         remainingInnings = maxInnings;
+        sixEnabled = false;
+        byId('sixButton').classList.add('hidden')
     }
     else {
         maxInnings = 2;
@@ -132,16 +135,16 @@ function updatePlayerNames(team, selectedPlayers) {
         byId('startButton').classList.remove('hidden');
         byId('tossButton').classList.remove('hidden')
         if (team1SelectedPlayers > 1 || team2SelectedPlayers > 1) {
-            byId('rotationCheck').classList.remove('hidden')
+            byId('rotateOnStrike').classList.remove('hidden')
         } else {
-            byId('rotationCheck').classList.add('hidden')
+            byId('rotateOnStrike').classList.add('hidden')
         }
     } else {
         // Hide the overs and bouncers inputs if any of the teams doesn't have players selected
         byId('matchRulesInput').classList.add('hidden');
         byId('startButton').classList.add('hidden');
         byId('tossButton').classList.add('hidden')
-        byId('rotationCheck').classList.add('hidden')
+        byId('rotateOnStrike').classList.add('hidden')
     }
 }
 
@@ -206,6 +209,9 @@ function updateScore() {
     // Check if it's a free hit and modify the score display accordingly
     if (isFreeHit) {
         scoreText = `<span style="color: red; font-weight: bold;">${scoreText} (Free Hit)</span>`;
+        if (!sixEnabled) {
+            byId('sixButton').classList.remove('hidden')
+        }
     }
 
     score.innerHTML = scoreText;
@@ -767,6 +773,7 @@ function addNoBall() {
 function handleFreeHit() {
     if (isFreeHit) {
         isFreeHit = false;
+        byId('sixButton').classList.add('hidden')
         updateScore(); // Update the score display to remove the "(Free Hit)" text
     }
 }
