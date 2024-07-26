@@ -43,7 +43,7 @@ let isFreeHit = false;
 let gameEnded = false;
 let rotateStrikeOnWicket = false;
 let sixesDisabled = false;
-let target = totalRuns[teamBatting] + 1;
+let target;
 // This is for toss announcement update
 let max;
 
@@ -188,7 +188,12 @@ function updateScore() {
         totalBalls[teamBatting] += player.balls;
     }
 
-    let target = totalRuns[teamBatting] + 1;
+    if (remainingInnings === 1) {
+        if (format === 'T20') {
+            target = totalRuns[teamBowling] + 1;
+            console.log(`Target is: ${target}`)
+        }
+    }
 
     let oversCompleted = Math.floor(totalBalls[teamBatting] / maxBallsPerOver);
     let ballsRemaining = totalBalls[teamBatting] % maxBallsPerOver;
@@ -212,12 +217,17 @@ function updateScore() {
     // Check if it's a free hit and modify the score display accordingly
     if (isFreeHit) {
         scoreText = `<span style="color: red; font-weight: bold;">${scoreText} (Free Hit)</span>`;
-        if (!sixEnabled) {
+        if (!sixesDisabled) {
             byId('sixButton').classList.remove('hidden')
         }
     }
 
     score.innerHTML = scoreText;
+
+    if (remainingInnings === 1 && totalRuns[teamBatting] >= target) {
+        console.log(`${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversCompleted}`)
+        gameEnded = true;
+    }
 
     // Update the UI to display the list of wickets
     let wicketsList = byId('wickets-list');
@@ -263,6 +273,10 @@ function updateScore() {
 function endInnings() {
 
     let j;
+
+    if (gameEnded) {
+        gameEnded = false;
+    }
 
     if (maxOvers === 0) {
         j = false
@@ -425,7 +439,8 @@ function addWicket() {
         nonStriker = null;
     } else {
         // If no players are left, add option to end the innings
-        byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>'
+        byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
+        gameEnded = true;
     }
 
     // Switch over if the last ball of the over
@@ -585,9 +600,6 @@ function startGame() {
     }
     console.log(`Final players array for team2:`, players['team2']);
 
-    let teamBattingPrefix = players[teamBatting];
-    let teamBowlingPrefix = players[teamBowling];
-
     teamBattingPlrs = playerCounts[teamBatting];
     teamBowlingPlrs = playerCounts[teamBowling];
     // console.log(`TeamBattingPlrs: ${teamBattingPlrs}, teamBowlingPlrs: ${teamBowlingPlrs}`);
@@ -605,7 +617,7 @@ function startGame() {
 
     maxBouncersAllowed = parseInt(byId('bouncers').value);
     target = totalRuns[teamBatting] + 1;
-    if (sixesDisabled) {
+    if (sixesDisabled && format === 'Test') {
         byId('sixButton').classList.add('hidden');
     }
 
@@ -780,7 +792,9 @@ function addNoBall() {
 function handleFreeHit() {
     if (isFreeHit) {
         isFreeHit = false;
+        if (format === 'Test' && sixesDisabled) {
         byId('sixButton').classList.add('hidden')
+        }
         updateScore(); // Update the score display to remove the "(Free Hit)" text
     }
 }
@@ -797,8 +811,13 @@ function addBouncer() {
     updateGameUI();
 }
 
-function undoLastAction() {
-    // Additional functionality for undoing the last action can be added here
+function undo() {
+    if (gameEnded) {
+        gameEnded = false;
+        players[teamBatting][striker].out = false
+    }
+    byId('endInningsButton').innerHTML = 'Declare'
+    updateGameUI();
 }
 
 function updateNonStriker() {
@@ -938,7 +957,6 @@ if (tossCloseButton) {
             byId('batButton').classList.add('hidden')
             byId('bowlButton').classList.add('hidden')
             tossModal.style.display = 'none'; // Hide the toss modal
-
         } else {
             console.warn("Toss modal element not found.");
         }
