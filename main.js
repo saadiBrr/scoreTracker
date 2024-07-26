@@ -294,7 +294,8 @@ function endInnings() {
             }
         }
     }
-
+    byId('endInningsButton').innerHTML = 'Declare'
+    max = 0;
     updateGameUI();
 }
 
@@ -375,7 +376,23 @@ function addWicket() {
     if (remainingPlayers.length > 1) {
         // Find the next striker who is not the non-striker
         if (remainingWickets > 0) {
-            return;
+            if (rotateStrikeOnWicket == true) {
+                let nextStriker = null;
+                for (let i = 0; i < playerCounts[teamBatting]; i++) {
+                    if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
+                        nextStriker = i;
+                        console.log(`NextStriker = ${nextStriker}`)
+                        break;
+                    }
+                }
+                if (nextStriker !== null) {
+                    striker = nextStriker;
+                } else {
+                    striker = nonStriker;
+                    nonStriker = null;
+                }
+            }
+            else return;
         } else {
             let nextStriker = null;
             for (let i = 0; i < playerCounts[teamBatting]; i++) {
@@ -397,13 +414,9 @@ function addWicket() {
         let playerIndex = players[teamBatting].findIndex(player => remainingPlayers.includes(player.name));
         striker = playerIndex;
         nonStriker = null;
-
     } else {
-        // If no players are left, end the innings
-        let confirmation = confirm('No wickets left. Do you want to end the innings?');
-        if (confirmation) {
-            endInnings();
-        }
+        // If no players are left, add option to end the innings
+        byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>'
     }
 
     // Switch over if the last ball of the over
@@ -810,9 +823,11 @@ function resetInnings() {
         bouncersThisOver = 0;
         isFreeHit = false;
         gameEnded = false;
+        max = 0;
         // remainingInnings = maxInnings;
 
         // Reset score and scorecard display
+        byId('endInningsButton').innerHTML = 'Declare'
         updateGameUI();
 
         // Add the "on-strike" class to player 1 and "off-strike" to player 2 of the batting team
