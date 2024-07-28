@@ -44,8 +44,7 @@ let gameEnded = false;
 let rotateStrikeOnWicket = false;
 let sixesDisabled = false;
 let target;
-// This is for toss announcement update
-let max;
+let max; // This is for toss announcement update
 
 
 function byId(id) {
@@ -195,21 +194,21 @@ function updateScore() {
         }
     }
 
-    let oversCompleted = Math.floor(totalBalls[teamBatting] / maxBallsPerOver);
-    let ballsRemaining = totalBalls[teamBatting] % maxBallsPerOver;
+    let oversCompleted = Math.floor(totalBalls[teamBatting] / 6);
+    let ballsBowledInOver = totalBalls[teamBatting] % maxBallsPerOver;
 
     let runRate = totalBalls[teamBatting] > 0 ? totalRuns[teamBatting] / (totalBalls[teamBatting] / 6) : 0; // Calculate run rate
     if (isNaN(runRate)) {
         runRate = 0; // Set run rate to 0 if it's NaN
     }
 
-    if (ballsRemaining == 0) {
+    if (ballsBowledInOver == 0) {
         oversBowled = oversCompleted;
     } else {
-        oversBowled = `${oversCompleted}.${ballsRemaining}`;
+        oversBowled = `${oversCompleted}.${ballsBowledInOver}`;
     }
 
-    let overOrOvers = oversCompleted === 1 ? 'over' : 'overs';
+    let overOrOvers = oversBowled === 1 ? 'over' : 'overs';
     let score = byId('score');
     let z = wickets[teamBatting] ? wickets[teamBatting].length : 0
     let scoreText = `${totalRuns[teamBatting]}/${z} (${oversBowled} ${overOrOvers}) Run Rate: ${runRate.toFixed(2)}`;
@@ -217,16 +216,22 @@ function updateScore() {
     // Check if it's a free hit and modify the score display accordingly
     if (isFreeHit) {
         scoreText = `<span style="color: red; font-weight: bold;">${scoreText} (Free Hit)</span>`;
-        if (!sixesDisabled) {
+        if (sixesDisabled) {
             byId('sixButton').classList.remove('hidden')
         }
     }
 
     score.innerHTML = scoreText;
-
-    if (remainingInnings === 1 && totalRuns[teamBatting] >= target) {
-        console.log(`${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversCompleted}`)
-        gameEnded = true;
+    if (maxOvers > 0) {
+        if (oversBowled == maxOvers && remainingInnings > 1) {
+            byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
+            gameEnded = true;
+            console.log("Innings ended because of lack of overs");
+        } else if (oversBowled == maxOvers && remainingInnings === 1) {
+            byId('endInningsButton').classList.add('hidden');
+            gameEnded = true;
+            console.log("Game ended because of lack of overs");
+        }
     }
 
     // Update the UI to display the list of wickets
@@ -267,6 +272,67 @@ function updateScore() {
             // Append the created list item to the wickets list element
             wicketsList.appendChild(listItem);
         });
+    }
+}
+
+function dynamicStatus() {
+
+    let runOrRuns = target - totalRuns[teamBatting] === 1 ? 'run' : 'runs'
+    let oversCheck = maxOvers > 0 ? true : false
+
+    // Setting default value in case none of the conditions that are about to follow are met
+    const teamAnnouncements = byId('teamAnnouncements');
+    teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
+    teamAnnouncements.classList.remove('hidden');
+
+    // Default "required" message while chasing
+    if (remainingInnings === 1) {
+
+        teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
+        teamAnnouncements.classList.remove('hidden');
+
+        teamAnnouncements.innerText = maxOvers > 0 ? `${byId(teamBatting + 'Name').value} is batting
+        Target: ${target}
+        ${byId(teamBatting + 'Name').value} need ${target - totalRuns[teamBatting]} ${runOrRuns} in ${(maxOvers * 6) - totalBalls[teamBatting]} balls` :
+            `${byId(teamBatting + 'Name').value} is batting
+        Target: ${target}`
+    }
+
+    // If on the last innings playing with limited overs
+    if (remainingInnings === 1 && oversCheck) {
+
+        // If targeted has been chased and balls left are greater than or equal to 0, make teamBatting the winner
+        if (totalRuns[teamBatting] >= target && maxOvers * 6 - totalBalls[teamBatting] >= 0) {
+            console.log(`Triggered target chased with balls left on limited overs. ${oversCheck, maxOvers, maxOvers * 6 - totalBalls[teamBatting]}`)
+            console.log(`${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversBowled}`)
+            byId('teamAnnouncements').innerHTML = `<font color="orange">${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversBowled} ${overOrOvers}</font>`;
+            gameEnded = true;
+        }
+
+        // If target has not been chased because overs finished or no wickets remain, make teamBowling the winner
+        else if (getRemainingPlayers().length === 0 || maxOvers * 6 - totalBalls[teamBatting] === 0) {
+            console.log(`${byId(teamBowling + 'Name').value} have won against ${byId(teamBatting + 'Name').value} by ${totalRuns[teamBowling] - totalRuns[teamBatting]} ${totalRuns[teamBowling] - totalRuns[teamBatting] === 1 ? 'run' : 'runs'}. ${byId(teamBatting + 'Name').value}'s final score was ${totalRuns[teamBatting]} off ${oversBowled, overOrOvers} `)
+            byId('teamAnnouncements').innerHTML = `<font color="orange">${byId(teamBowling + 'Name').value} have won against ${byId(teamBatting + 'Name').value} by ${totalRuns[teamBowling] - totalRuns[teamBatting]} ${totalRuns[teamBowling] - totalRuns[teamBatting] === 1 ? 'run' : 'runs'}. ${byId(teamBatting + 'Name').value}'s final score was ${totalRuns[teamBatting]} off ${oversBowled} ${overOrOvers}</font>`;
+            gameEnded = true;
+        }
+
+        // If NOT playing with limited overs and on last innings
+    } else if (remainingInnings === 1 && !oversCheck) {
+
+        // If targeted has been chased wickets are left, make teamBatting the winner
+        if (totalRuns[teamBatting] >= target && getRemainingPlayers().length >= 1) {
+            console.log(`Triggered target chased with wickets left on unlimited overs. ${oversCheck, maxOvers, oversBowled}`)
+            console.log(`${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversBowled}`)
+            byId('teamAnnouncements').innerHTML = `<font color="orange">${byId(teamBatting + 'Name').value} have won against ${byId(teamBowling + 'Name').value}. Their final score was ${totalRuns[teamBatting]} off ${oversBowled} ${overOrOvers}</font>`;
+            gameEnded = true;
+        }
+
+        // If no wickets remain while target hasn't been chased, make teamBowling the winner
+        else if (getRemainingPlayers().length === 0 && totalRuns[teamBatting] < target) {
+            console.log(`${byId(teamBowling + 'Name').value} have won against ${byId(teamBatting + 'Name').value} by ${totalRuns[teamBowling] - totalRuns[teamBatting]} ${totalRuns[teamBowling] - totalRuns[teamBatting] === 1 ? 'run' : 'runs'}. ${byId(teamBatting + 'Name').value}'s final score was ${totalRuns[teamBatting]} off ${oversBowled, overOrOvers}`)
+            byId('teamAnnouncements').innerHTML = `<font color="orange">${byId(teamBowling + 'Name').value} have won against ${byId(teamBatting + 'Name').value} by ${totalRuns[teamBowling] - totalRuns[teamBatting]} ${totalRuns[teamBowling] - totalRuns[teamBatting] === 1 ? 'run' : 'runs'}. ${byId(teamBatting + 'Name').value}'s final score was ${totalRuns[teamBatting]} off ${oversBowled} ${overOrOvers}</font>`;
+            gameEnded = true;
+        }
     }
 }
 
@@ -320,6 +386,7 @@ function endInnings() {
     byId('endInningsButton').innerHTML = 'Declare'
     max = 0;
     updateGameUI();
+
 }
 
 function endGame(forced) {
@@ -616,10 +683,10 @@ function startGame() {
     }
 
     maxBouncersAllowed = parseInt(byId('bouncers').value);
-    target = totalRuns[teamBatting] + 1;
+    maxOvers = parseInt(byId('overs').value);
     if (sixesDisabled && format === 'Test') {
         byId('sixButton').classList.add('hidden');
-    }
+    };
 
     byId('playerSelection').classList.add('hidden');
     byId('playerSelection').style.display = "none";
@@ -793,7 +860,7 @@ function handleFreeHit() {
     if (isFreeHit) {
         isFreeHit = false;
         if (format === 'Test' && sixesDisabled) {
-        byId('sixButton').classList.add('hidden')
+            byId('sixButton').classList.add('hidden')
         }
         updateScore(); // Update the score display to remove the "(Free Hit)" text
     }
@@ -816,7 +883,7 @@ function undo() {
         gameEnded = false;
         players[teamBatting][striker].out = false
     }
-    byId('endInningsButton').innerHTML = 'Declare'
+    byId('endInningsButton').innerText = 'Declare'
     updateGameUI();
 }
 
@@ -922,14 +989,6 @@ function updateGameUI() {
     updateScore();
     updateScorecard();
 
-    const tossAnnouncement = byId('teamBattingAnnouncement');
-    if (max !== 1) {
-        teamBattingAnnouncement.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
-        tossAnnouncement.classList.remove('hidden');
-        max = 1
-    } else {
-        return;
-    }
 }
 
 function forceRotate() {
