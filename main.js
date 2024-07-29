@@ -1131,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleChoice(selectedChoice) {
         choice = selectedChoice;
-        finalDecision.style.display = 'block';
+        finalDecision.show();
         finalDecision.textContent = `${tossWinner} won the toss and decided to ${choice === 'bat' ? 'bat' : 'bowl'}`;
         tossAnnouncement.textContent = `${tossWinner} won the toss and decided to ${choice === 'bat' ? 'bat' : 'bowl'}`;
         tossAnnouncement.show();
