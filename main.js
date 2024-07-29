@@ -51,24 +51,32 @@ function byId(id) {
     return document.getElementById(id);
 }
 
+Element.prototype.hide = function () {
+    this.classList.add('hidden');
+};
+
+Element.prototype.show = function () {
+    this.classList.remove('hidden');
+}
+
 function updateFormat() {
 
     format = byId('selectedFormat').value;
     console.log("Format changed to:", format); // Debugging line
 
-    byId('teamSelection').classList.remove('hidden');
+    byId('teamSelection').show();
 
     if (format === "Test") {
-        byId('inningsInput').classList.remove('hidden');
+        byId('inningsInput').show();
         maxInnings = parseInt(byId('innings').value) === 1 ? 2 : 4;
         remainingInnings = maxInnings;
-        byId('sixEnabledCheckboxContainer').classList.remove('hidden'); // Make the checkbox visible
+        byId('sixEnabledCheckboxContainer').show(); // Make the checkbox visible
     }
     else if (format === "T20") {
         maxInnings = 2;
         remainingInnings = 2;
-        byId('inningsInput').classList.add('hidden');
-        byId('sixEnabledCheckboxContainer').classList.add('hidden'); // Hide the checkbox
+        byId('inningsInput').hide();
+        byId('sixEnabledCheckboxContainer').hide(); // Hide the checkbox
     }
 }
 
@@ -82,12 +90,12 @@ function selectTeamNames() {
         return;
     }
 
-    byId('confirmTeamsButton').classList.add('hidden')
+    byId('confirmTeamsButton').hide()
     byId('team1Name').textContent = team1Name;
     byId('team1Name').disabled = true;
     byId('team2Name').textContent = team2Name;
     byId('team2Name').disabled = true;
-    byId('playerSelection').classList.remove('hidden');
+    byId('playerSelection').show();
     byId('playerSelection').style.display = 'table'
 }
 
@@ -116,9 +124,9 @@ function updatePlayerNames(team, selectedPlayers) {
 
     // Show or hide the playerNames div based on whether there are selected players
     if (selectedPlayers > 0) {
-        byId(`${team}PlayerNames`).classList.remove('hidden');
+        byId(`${team}PlayerNames`).show();
     } else {
-        byId(`${team}PlayerNames`).classList.add('hidden');
+        byId(`${team}PlayerNames`).hide();
     }
 
     // Check if both teams have at least one player selected
@@ -130,23 +138,23 @@ function updatePlayerNames(team, selectedPlayers) {
 
     if (team1SelectedPlayers > 0 && team2SelectedPlayers > 0) {
         // Both teams have at least one player selected, show the overs and bouncers inputs
-        byId('matchRulesInput').classList.remove('hidden');
-        byId('startButton').classList.remove('hidden');
-        byId('tossButton').classList.remove('hidden');
+        byId('matchRulesInput').show();
+        byId('startButton').show();
+        byId('tossButton').show();
         if (format === 'Test') {
-            byId('sixEnabledCheckboxContainer').classList.remove('hidden');
+            byId('sixEnabledCheckboxContainer').show();
         }
         if (team1SelectedPlayers > 1 || team2SelectedPlayers > 1) {
-            byId('rotationCheckboxContainer').classList.remove('hidden')
+            byId('rotationCheckboxContainer').show()
         } else {
-            byId('rotationCheckboxContainer').classList.add('hidden')
+            byId('rotationCheckboxContainer').hide()
         }
     } else {
         // Hide the overs and bouncers inputs if any of the teams doesn't have players selected
-        byId('matchRulesInput').classList.add('hidden');
-        byId('startButton').classList.add('hidden');
-        byId('tossButton').classList.add('hidden')
-        byId('rotationCheckboxContainer').classList.add('hidden')
+        byId('matchRulesInput').hide();
+        byId('startButton').hide();
+        byId('tossButton').hide()
+        byId('rotationCheckboxContainer').hide()
     }
 }
 
@@ -217,7 +225,7 @@ function updateScore() {
     if (isFreeHit) {
         scoreText = `<span style="color: red; font-weight: bold;">${scoreText} (Free Hit)</span>`;
         if (sixesDisabled) {
-            byId('sixButton').classList.remove('hidden')
+            byId('sixButton').show()
         }
     }
 
@@ -272,7 +280,7 @@ function dynamicStatus() {
     // Setting default value in case none of the conditions that are about to follow are met
     const teamAnnouncements = byId('teamAnnouncements');
     teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
-    teamAnnouncements.classList.remove('hidden');
+    teamAnnouncements.show();
     if (remainingInnings === 2 && maxOvers > 0 && maxOvers === oversBowled) {
 
     }
@@ -283,20 +291,20 @@ function dynamicStatus() {
         if (maxOvers > 0) {
             if (oversBowled == maxOvers && remainingInnings > 1) {
                 byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
-                byId('runButtons').classList.add('hidden')
-                byId('extraButtons').classList.remove('hidden')
+                byId('runButtons').hide()
+                byId('extraButtons').show()
                 byId('teamAnnouncements').innerText === `${byId(teamBatting + 'Name').value}'s innings has ended at ${totalRuns[teamBatting]}`
                 gameEnded = true;
                 console.log("Innings ended because overs ended");
             } else if (oversBowled == maxOvers && remainingInnings === 1) {
-                byId('endInningsButton').classList.add('hidden');
+                byId('endInningsButton').hide();
                 gameEnded = true;
                 console.log("Game ended because of lack of overs");
             }
         }
 
         teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
-        teamAnnouncements.classList.remove('hidden');
+        teamAnnouncements.show();
 
         teamAnnouncements.innerText = maxOvers > 0 ? `${byId(teamBatting + 'Name').value} is batting
         Target: ${target}
@@ -692,20 +700,20 @@ function startGame() {
     maxBouncersAllowed = parseInt(byId('bouncers').value);
     maxOvers = parseInt(byId('overs').value);
     if (sixesDisabled && format === 'Test') {
-        byId('sixButton').classList.add('hidden');
+        byId('sixButton').hide();
     };
 
-    byId('playerSelection').classList.add('hidden');
+    byId('playerSelection').hide();
     byId('playerSelection').style.display = "none";
-    byId('formatSelection').classList.add('hidden');
-    byId('startButton').classList.add('hidden');
-    byId('tossButton').classList.add('hidden');
-    byId('matchRulesInput').classList.add('hidden');
-    byId('teamSelection').classList.add('hidden');
+    byId('formatSelection').hide();
+    byId('startButton').hide();
+    byId('tossButton').hide();
+    byId('matchRulesInput').hide();
+    byId('teamSelection').hide();
     byId('scorecard').classList.add('visible');
-    byId('score').classList.remove('hidden');
-    byId('runButtons').classList.remove('hidden');
-    byId('extraButtons').classList.remove('hidden')
+    byId('score').show();
+    byId('runButtons').show();
+    byId('extraButtons').show()
 
     updateNonStriker();
     updateGameUI();
@@ -868,7 +876,7 @@ function handleFreeHit() {
     if (isFreeHit) {
         isFreeHit = false;
         if (format === 'Test' && sixesDisabled) {
-            byId('sixButton').classList.add('hidden')
+            byId('sixButton').hide()
         }
         updateScore(); // Update the score display to remove the "(Free Hit)" text
     }
@@ -963,7 +971,7 @@ function resetInnings() {
             playerElements[3].classList.remove('out');
         }
         console.warn("Innings has been reset");
-        byId('extraButtons').classList.remove('hidden')
+        byId('extraButtons').show()
     }
 }
 
@@ -1023,8 +1031,8 @@ if (tossCloseButton) {
         // Get the modal element
         let tossModal = byId('toss-modal');
         if (tossModal) {
-            byId('batButton').classList.add('hidden')
-            byId('bowlButton').classList.add('hidden')
+            byId('batButton').hide()
+            byId('bowlButton').hide()
             tossModal.style.display = 'none'; // Hide the toss modal
         } else {
             console.warn("Toss modal element not found.");
@@ -1038,7 +1046,7 @@ function updateConsoleLogViewer(enabled) {
 
     if (!enabled) return;
 
-    byId('console-log-viewer').classList.remove('hidden')
+    byId('console-log-viewer').show()
 
     consoleLogViewer.innerHTML = '';
 
@@ -1103,8 +1111,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         else {
             handleChoice('bat');
-            batButton.classList.add('hidden')
-            bowlButton.classList.add('hidden')
+            batButton.hide()
+            bowlButton.hide()
         }
     }
 
@@ -1120,8 +1128,8 @@ document.addEventListener('DOMContentLoaded', function () {
             batSure = false;
         } else {
             handleChoice('bowl');
-            batButton.classList.add('hidden')
-            bowlButton.classList.add('hidden')
+            batButton.hide()
+            bowlButton.hide()
         }
     }
 
@@ -1130,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', function () {
         finalDecision.style.display = 'block';
         finalDecision.textContent = `${tossWinner} won the toss and decided to ${choice === 'bat' ? 'bat' : 'bowl'}`;
         tossAnnouncement.textContent = `${tossWinner} won the toss and decided to ${choice === 'bat' ? 'bat' : 'bowl'}`;
-        tossAnnouncement.classList.remove('hidden');
+        tossAnnouncement.show();
 
         // Assign teamBatting and teamBowling based on the choice
         if (choice === 'bat') {
@@ -1169,13 +1177,13 @@ document.addEventListener('DOMContentLoaded', function () {
             clearInterval(dotsInterval);
             tossWinner = Math.random() < 0.5 ? team1 : team2;
             tossResultElem.textContent = `${tossWinner} win the toss!`;
-            batButton.classList.remove('hidden');
-            bowlButton.classList.remove('hidden');
+            batButton.show();
+            bowlButton.show();
         }, 2000);
 
         // Hide the buttons initially
-        batButton.classList.add('hidden');
-        bowlButton.classList.add('hidden');
+        batButton.hide();
+        bowlButton.hide();
 
         // Reset Sure states
         batSure = false;
