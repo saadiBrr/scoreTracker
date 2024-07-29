@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>scoreTracker</title>
+    <title>Cricket Score Tracker</title>
 
 <body>
 
@@ -100,7 +100,7 @@
 
     <div id="matchRulesInput" class="hidden"
         style="background-color: rgba(30, 30, 30, 0.9); padding: 5px; border: 1px solid #000; border-radius: 5px; flex-direction: column; width: 260.5px; margin-bottom: 5px;">
-        
+
         <div id="oversInput" style="margin-bottom: 5px;">
             <label for="overs">Number of Overs:</label>
             <input type="number"
@@ -172,6 +172,9 @@
         <button onclick="addBouncer()">Bouncer</button>
         <button onclick="addWicket()">Wicket</button>
         <button onclick="forceRotate()">Force Rotate</button>
+    </div>
+
+    <div id="extraButtons" class="hidden">
         <button id='undoButton' onclick="undo()">Undo</button>
         <button id="show-wickets-button">Show Wickets</button>
         <button id='resetInningsButton' , onclick="resetInnings()">Reset</button>

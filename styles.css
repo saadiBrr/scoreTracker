@@ -87,7 +87,7 @@
         color: gray
     }
 
-    #runButtons button {
+    #runButtons button, #extraButtons button {
         font-size: 18px;
         padding: 10px 20px;
         margin: 5px;

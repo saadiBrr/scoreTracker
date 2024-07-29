@@ -222,17 +222,6 @@ function updateScore() {
     }
 
     score.innerHTML = scoreText;
-    if (maxOvers > 0) {
-        if (oversBowled == maxOvers && remainingInnings > 1) {
-            byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
-            gameEnded = true;
-            console.log("Innings ended because of lack of overs");
-        } else if (oversBowled == maxOvers && remainingInnings === 1) {
-            byId('endInningsButton').classList.add('hidden');
-            gameEnded = true;
-            console.log("Game ended because of lack of overs");
-        }
-    }
 
     // Update the UI to display the list of wickets
     let wicketsList = byId('wickets-list');
@@ -284,9 +273,27 @@ function dynamicStatus() {
     const teamAnnouncements = byId('teamAnnouncements');
     teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
     teamAnnouncements.classList.remove('hidden');
+    if (remainingInnings === 2 && maxOvers > 0 && maxOvers === oversBowled) {
+
+    }
 
     // Default "required" message while chasing
     if (remainingInnings === 1) {
+
+        if (maxOvers > 0) {
+            if (oversBowled == maxOvers && remainingInnings > 1) {
+                byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
+                byId('runButtons').classList.add('hidden')
+                byId('extraButtons').classList.remove('hidden')
+                byId('teamAnnouncements').innerText === `${byId(teamBatting + 'Name').value}'s innings has ended at ${totalRuns[teamBatting]}`
+                gameEnded = true;
+                console.log("Innings ended because overs ended");
+            } else if (oversBowled == maxOvers && remainingInnings === 1) {
+                byId('endInningsButton').classList.add('hidden');
+                gameEnded = true;
+                console.log("Game ended because of lack of overs");
+            }
+        }
 
         teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
         teamAnnouncements.classList.remove('hidden');
@@ -698,6 +705,7 @@ function startGame() {
     byId('scorecard').classList.add('visible');
     byId('score').classList.remove('hidden');
     byId('runButtons').classList.remove('hidden');
+    byId('extraButtons').classList.remove('hidden')
 
     updateNonStriker();
     updateGameUI();
@@ -955,6 +963,7 @@ function resetInnings() {
             playerElements[3].classList.remove('out');
         }
         console.warn("Innings has been reset");
+        byId('extraButtons').classList.remove('hidden')
     }
 }
 
@@ -988,6 +997,7 @@ function updateGameUI() {
 
     updateScore();
     updateScorecard();
+    dynamicStatus();
 
 }
 
