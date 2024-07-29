@@ -47,10 +47,6 @@ let target;
 let max; // This is for toss announcement update
 
 
-function byId(id) {
-    return document.getElementById(id);
-}
-
 Element.prototype.hide = function () {
     this.classList.add('hidden');
 };
@@ -59,10 +55,13 @@ Element.prototype.show = function () {
     this.classList.remove('hidden');
 }
 
+function byId(id) {
+    return document.getElementById(id);
+}
+
 function updateFormat() {
 
     format = byId('selectedFormat').value;
-    console.log("Format changed to:", format); // Debugging line
 
     byId('teamSelection').show();
 
@@ -218,8 +217,8 @@ function updateScore() {
 
     let overOrOvers = oversBowled === 1 ? 'over' : 'overs';
     let score = byId('score');
-    let z = wickets[teamBatting] ? wickets[teamBatting].length : 0
-    let scoreText = `${totalRuns[teamBatting]}/${z} (${oversBowled} ${overOrOvers}) Run Rate: ${runRate.toFixed(2)}`;
+    let wicketCount = wickets[teamBatting] ? wickets[teamBatting].length : 0
+    let scoreText = `${totalRuns[teamBatting]}/${wicketCount} (${oversBowled} ${overOrOvers}) Run Rate: ${runRate.toFixed(2)}`;
 
     // Check if it's a free hit and modify the score display accordingly
     if (isFreeHit) {
@@ -230,59 +229,22 @@ function updateScore() {
     }
 
     score.innerHTML = scoreText;
-
-    // Update the UI to display the list of wickets
-    let wicketsList = byId('wickets-list');
-    if (!wicketsList) {
-        console.warn("Wickets list element not found.");
-        return; // Exit function if element not found
-    }
-
-    // Clear any existing content inside the wickets list
-    wicketsList.innerHTML = '';
-
-    // Check if there are no wickets
-    if (z === 0) {
-        // If no wickets have fallen, display a message
-        let listItem = document.createElement('li');
-        listItem.textContent = "No wickets have fallen.";
-        wicketsList.appendChild(listItem);
-    } else {
-        // Loop through each wicket in the wickets array
-        wickets[teamBatting].forEach((wicket, index) => {
-
-            index = index + 1
-            // Create a new list item element for the wicket
-            let listItem = document.createElement('li');
-            let wi = wicket
-
-            // Set the text content of the list item to display wicket information
-            listItem.textContent = `${wi.batsman} ${wi.runs}(${wi.balls})`;
-
-            // If bowler information is available and wicket is credited, add it to the text content
-            if (wicket.bowler && wicket.credited) {
-                listItem.textContent += ` (b. ${wicket.bowler})`;
-            }
-
-            listItem.textContent += ` FOW: ${wi.fallOfWicket}`
-
-            // Append the created list item to the wickets list element
-            wicketsList.appendChild(listItem);
-        });
-    }
 }
 
-function dynamicStatus() {
+function updateDynamicStatus() {
 
     let runOrRuns = target - totalRuns[teamBatting] === 1 ? 'run' : 'runs'
+    let overOrOvers = oversBowled === 1 ? 'over' : 'overs';
     let oversCheck = maxOvers > 0 ? true : false
 
-    // Setting default value in case none of the conditions that are about to follow are met
+    // Default "required" value while batting first
     const teamAnnouncements = byId('teamAnnouncements');
     teamAnnouncements.innerHTML = `${byId(teamBatting + 'Name').value} is batting`
     teamAnnouncements.show();
-    if (remainingInnings === 2 && maxOvers > 0 && maxOvers === oversBowled) {
 
+    if ((remainingInnings === 2 && maxOvers > 0) && maxOvers === oversBowled) {
+        gameEnded = true;
+        teamAnnouncements.innerHTML = `Innings ended`
     }
 
     // Default "required" message while chasing
@@ -348,6 +310,46 @@ function dynamicStatus() {
             byId('teamAnnouncements').innerHTML = `<font color="orange">${byId(teamBowling + 'Name').value} have won against ${byId(teamBatting + 'Name').value} by ${totalRuns[teamBowling] - totalRuns[teamBatting]} ${totalRuns[teamBowling] - totalRuns[teamBatting] === 1 ? 'run' : 'runs'}. ${byId(teamBatting + 'Name').value}'s final score was ${totalRuns[teamBatting]} off ${oversBowled} ${overOrOvers}</font>`;
             gameEnded = true;
         }
+    }
+}
+
+function updateWicketsList() {
+
+    let wicketCount = wickets[teamBatting] ? wickets[teamBatting].length : 0;
+
+    // Update the UI to display the list of wickets
+    let wicketsList = byId('wickets-list');
+    if (!wicketsList) {
+        console.warn("Wickets list element not found.");
+        return; // Exit function if element not found
+    }
+
+    // Clear any existing content inside the wickets list
+    wicketsList.innerHTML = '';
+
+    // Check if there are no wickets
+    if (wicketCount === 0) {
+        // If no wickets have fallen, display a message
+        let listItem = document.createElement('li');
+        listItem.textContent = "No wickets have fallen.";
+        wicketsList.appendChild(listItem);
+    } else {
+        // Loop through each wicket in the wickets array
+        wickets[teamBatting].forEach((wicket, index) => {
+            index = index + 1
+            // Create a new list item element for the wicket
+            let listItem = document.createElement('li');
+            let wi = wicket
+            // Set the text content of the list item to display wicket information
+            listItem.textContent = `${wi.batsman} ${wi.runs}(${wi.balls})`;
+            // If bowler information is available and wicket is credited, add it to the text content
+            if (wicket.bowler && wicket.credited) {
+                listItem.textContent += ` (b. ${wicket.bowler})`;
+            }
+            listItem.textContent += ` FOW: ${wi.fallOfWicket}`
+            // Append the created list item to the wickets list element
+            wicketsList.appendChild(listItem);
+        });
     }
 }
 
@@ -438,42 +440,20 @@ function addWicket() {
     let remainingWickets = player.remainingWickets
     remainingWickets--;
     player.remainingWickets = remainingWickets;
-    console.log(remainingWickets, player.remainingWickets)
-
     player.balls++;
 
-    updateGameUI();
-
-    let outOnBall = oversBowled;
-
-    let ballsFaced = player.balls;
-
+    // Mark player as out
     if (remainingWickets === 0) {
         // Mark the player as out
-        console.log(`Sending input to markPlayerOut function: Current Striker is ${striker}. Player being sent is ${players[teamBatting].indexOf(player)}`);
         markPlayerOut(player);
 
-        let message = ballsFaced === 1
-            ? `${player.name} is all out at ${player.runs} runs off of ${player.balls} ball`
-            : `${player.name} is all out at ${player.runs} runs off of ${player.balls} balls`;
+        // let message = ballsFaced === 1
+        //     ? `${player.name} is all out at ${player.runs} runs off of ${player.balls} ball`
+        //     : `${player.name} is all out at ${player.runs} runs off of ${player.balls} balls`;
 
-        console.log(message);
+        // console.log(message);
     }
 
-    let runsAtFOW = totalRuns[teamBatting];
-    let wicketsAtFOW = wickets[teamBatting].length + 1;
-
-    // ----------------WICKET OBJECT HERE----------------
-    let wicket = {
-        batsman: player.name,
-        fallOfWicket: `${runsAtFOW}/${wicketsAtFOW} ${outOnBall} ov`,
-        runs: player.runs,
-        balls: player.balls,
-        bowler: null,
-        credited: false
-    };
-
-    wickets[teamBatting].push(wicket);
     updateGameUI();
 
     let remainingPlayers = getRemainingPlayers().filter(player => player && !player.out);
@@ -481,23 +461,12 @@ function addWicket() {
     if (remainingPlayers.length > 1) {
         // Find the next striker who is not the non-striker
         if (remainingWickets > 0) {
-            if (rotateStrikeOnWicket == true) {
-                let nextStriker = null;
-                for (let i = 0; i < playerCounts[teamBatting]; i++) {
-                    if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
-                        nextStriker = i;
-                        console.log(`NextStriker = ${nextStriker}`)
-                        break;
-                    }
-                }
-                if (nextStriker !== null) {
-                    striker = nextStriker;
-                } else {
-                    striker = nonStriker;
-                    nonStriker = null;
-                }
+            if (rotateStrikeOnWicket === true) {
+                let temp;
+                temp = striker
+                striker = nonStriker
+                nonStriker = temp
             }
-            else return;
         } else {
             let nextStriker = null;
             for (let i = 0; i < playerCounts[teamBatting]; i++) {
@@ -509,38 +478,24 @@ function addWicket() {
             }
 
             if (nextStriker !== null) {
+                console.log('nextStriker is not null. Value: ' + nextStriker)
                 striker = nextStriker;
-            } else {
-                striker = nonStriker;
-                nonStriker = null;
+                nextStriker = null;
             }
         }
     } else if (getRemainingPlayers().filter(player => player && !player.out).length === 1) {
         let playerIndex = players[teamBatting].findIndex(player => remainingPlayers.includes(player.name));
         striker = playerIndex;
         nonStriker = null;
+        console.log('set nonStriker to null')
     } else {
         // If no players are left, add option to end the innings
         byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
         gameEnded = true;
     }
 
-    // Switch over if the last ball of the over
-    if (ballsFaced % 6 === 0 && !gameEnded) {
-        if (striker && nonStriker) {
-            let temp = striker;
-            striker = nonStriker;
-            nonStriker = temp;
-            console.log("Switching over...");
-            switchOver();
-        }
-        else {
-            striker = striker
-            nonStriker = null
-        }
-    }
-
-    // Update UI to display wickets
+    createWicketObject(player);
+    handleWicketStrike(player);
     updateGameUI();
 }
 
@@ -575,6 +530,136 @@ function markPlayerOut(playerKey) {
     updateGameUI();
 }
 
+function createWicketObject(player) {
+    let runsAtFOW = totalRuns[teamBatting];
+    let wicketsAtFOW = wickets[teamBatting].length + 1;
+    let outOnBall = oversBowled;
+
+    // ----------------WICKET OBJECT HERE----------------
+    let wicket = {
+        batsman: player.name,
+        fallOfWicket: `${runsAtFOW}/${wicketsAtFOW} ${outOnBall} ov`,
+        runs: player.runs,
+        balls: player.balls,
+        bowler: null,
+        credited: false
+    };
+
+    wickets[teamBatting].push(wicket);
+}
+
+function handleWicketStrike(player) {
+
+    let ballsFaced = player.balls;
+
+    // Switch over if the last ball of the over
+    if (ballsFaced % 6 === 0 && !gameEnded) {
+        if (striker && nonStriker) {
+            let temp = striker;
+            striker = nonStriker;
+            nonStriker = temp;
+            console.log("Switching over...");
+            switchOver();
+        }
+        else {
+            striker = striker
+            nonStriker = null
+        }
+    }
+
+}
+
+// function findNextStriker() {
+
+//     let player = players[teamBatting][striker];
+//     let remainingWickets = player.remainingWickets
+//     let remainingPlayers = getRemainingPlayers().filter(player => player && !player.out);
+
+
+//     // Handling for rotate strike on wicket
+//     if (remainingPlayers.length > 1) {
+//         // Find the next striker who is not the non-striker
+//         if (remainingWickets > 0) {
+//             if (rotateStrikeOnWicket == true) {
+//                 let temp;
+
+//                 temp = striker
+//                 striker = nonStriker
+//                 nonStriker = temp
+//             }
+
+//         } else {
+//             // Find the next striker who is not the non-striker
+//             let nextStriker = null;
+//             for (let i = 0; i < playerCounts[teamBatting]; i++) {
+//                 if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
+//                     nextStriker = i;
+//                     console.log(`NextStriker = ${nextStriker}`)
+//                     break;
+//                 }
+//             }
+
+//             if (nextStriker !== null) {
+//                 striker = nextStriker;
+//             } else {
+//                 striker = nonStriker;
+//                 nonStriker = null;
+//             }
+//         }
+
+//         // If only 1 player left, make him striker 
+//     } else if (getRemainingPlayers().filter(player => player && !player.out).length === 1) {
+//         let playerIndex = players[teamBatting].findIndex(player => remainingPlayers.includes(player.name));
+//         striker = playerIndex;
+//         nonStriker = null;
+//     } else {
+//         // If no players are left, add option to end the innings
+//         byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
+//         gameEnded = true;
+//     }
+// }
+
+function createPlayerObjects(team) {
+
+    players[team] = [];
+    let numPlayers = parseInt(byId(team + 'Players').value);
+
+    for (let i = 1; i <= numPlayers; i++) {
+        let playerElement = byId(`${team}Player${i}`);
+        let wicketsElement = byId(`${team}Wickets${i}`);
+
+        if (playerElement && wicketsElement) {
+            let playerName = playerElement.value.trim();
+            let playerWickets = parseInt(wicketsElement.value) >= 5 ? 5 : parseInt(wicketsElement.value);
+
+            if (playerName === '') {
+                playerName = `Player ${i}`;
+            }
+
+            if (!playerCounts[team]) {
+                playerCounts[team] = 0;
+            }
+            playerCounts[team] += 1;
+
+            let player = {
+                name: playerName,
+                id: i,
+                totalWickets: playerWickets,
+                remainingWickets: playerWickets,
+                runs: 0,
+                balls: 0,
+                fours: 0,
+                sixes: 0,
+                extras: 0,
+                out: false
+            };
+            players[team].push(player);
+        } else {
+            console.warn(`Missing player or wickets element for ${team} index ${i}`);
+        }
+    }
+}
+
 function startGame() {
     // console.log('Starting Game');
 
@@ -585,102 +670,6 @@ function startGame() {
 
     let teamBattingPlrs;
     let teamBowlingPlrs;
-
-    // Get the number of overs and validate it
-    let numOvers = parseInt(byId('overs').value);
-    numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
-
-    // Functionality from createPlayerObjects for team1
-    players['team1'] = [];
-    const numberOfPlayersInTeam1 = parseInt(byId('team1Players').value);
-    // console.log(`Creating players for team1. Number of players: ${numberOfPlayersInTeam1}`);
-
-    for (let i = 1; i <= numberOfPlayersInTeam1; i++) {
-        let playerElement = byId(`team1Player${i}`);
-        let wicketsElement = byId(`team1Wickets${i}`);
-
-        // console.log(`Player Element ${i}:`, playerElement ? playerElement.value : 'null');
-        // console.log(`Wickets Element ${i}:`, wicketsElement ? wicketsElement.value : 'null');
-
-        if (playerElement && wicketsElement) {
-            let playerName = playerElement.value.trim();
-            let playerWickets = parseInt(wicketsElement.value);
-
-            if (playerName === '') {
-                playerName = `Player ${i}`;
-            }
-
-            if (!playerCounts['team1']) {
-                playerCounts['team1'] = 0;
-            }
-            playerCounts['team1'] += 1;
-
-            let player = {
-                name: playerName,
-                id: i,
-                totalWickets: playerWickets,
-                remainingWickets: playerWickets,
-                runs: 0,
-                balls: 0,
-                fours: 0,
-                sixes: 0,
-                extras: 0,
-                out: false
-            };
-
-            // console.log(`Created player ${i}:`, player);
-            players['team1'].push(player);
-        } else {
-            console.warn(`Missing player or wickets element for index ${i}`);
-        }
-    }
-    console.log(`Final players array for team1:`, players['team1']);
-
-    // Functionality from createPlayerObjects for team2
-    players['team2'] = [];
-    const numberOfPlayersInTeam2 = parseInt(byId('team2Players').value);
-    // console.log(`Creating players for team2. Number of players: ${numberOfPlayersInTeam2}`);
-
-    for (let i = 1; i <= numberOfPlayersInTeam2; i++) {
-        let playerElement = byId(`team2Player${i}`);
-        let wicketsElement = byId(`team2Wickets${i}`);
-
-        // console.log(`Player Element ${i}:`, playerElement ? playerElement.value : 'null');
-        // console.log(`Wickets Element ${i}:`, wicketsElement ? wicketsElement.value : 'null');
-
-        if (playerElement && wicketsElement) {
-            let playerName = playerElement.value.trim();
-            let playerWickets = parseInt(wicketsElement.value);
-
-            if (playerName === '') {
-                playerName = `Player ${i}`;
-            }
-
-            if (!playerCounts['team2']) {
-                playerCounts['team2'] = 0;
-            }
-            playerCounts['team2'] += 1;
-
-            let player = {
-                name: playerName,
-                id: i,
-                totalWickets: playerWickets,
-                remainingWickets: playerWickets,
-                runs: 0,
-                balls: 0,
-                fours: 0,
-                sixes: 0,
-                extras: 0,
-                out: false
-            };
-
-            // console.log(`Created player ${i}:`, player);
-            players['team2'].push(player);
-        } else {
-            console.warn(`Missing player or wickets element for index ${i}`);
-        }
-    }
-    console.log(`Final players array for team2:`, players['team2']);
 
     teamBattingPlrs = playerCounts[teamBatting];
     teamBowlingPlrs = playerCounts[teamBowling];
@@ -697,11 +686,32 @@ function startGame() {
         }
     }
 
+    let numOvers = parseInt(byId('overs').value);
+
+    numOvers = isNaN(numOvers) || numOvers <= 0 ? Infinity : numOvers; // Default to Infinity if invalid or 0
     maxBouncersAllowed = parseInt(byId('bouncers').value);
     maxOvers = parseInt(byId('overs').value);
     if (sixesDisabled && format === 'Test') {
         byId('sixButton').hide();
     };
+
+    createPlayerObjects(teamBatting);
+    createPlayerObjects(teamBowling);
+    initUI();
+    updateNonStriker();
+    updateGameUI();
+    getRemainingPlayers();
+}
+
+function switchOver() {
+    switchStrikeIfSingleOrTriple();
+    ballsThisOver = 0;
+    overs++; // Increment the over count
+    bouncersThisOver = 0;
+    updateScore();
+}
+
+function initUI() {
 
     byId('playerSelection').hide();
     byId('playerSelection').style.display = "none";
@@ -715,17 +725,6 @@ function startGame() {
     byId('runButtons').show();
     byId('extraButtons').show()
 
-    updateNonStriker();
-    updateGameUI();
-    getRemainingPlayers();
-}
-
-function switchOver() {
-    switchStrikeIfSingleOrTriple();
-    ballsThisOver = 0;
-    overs++; // Increment the over count
-    bouncersThisOver = 0;
-    updateScore();
 }
 
 function switchStrike() {
@@ -801,35 +800,31 @@ function addRun(run) {
         }
     }
 
-    // Increment runs and balls for the striker
     player.runs += run;
     player.balls++;
     ballsThisOver++;
     handleFreeHit();
 
-    // Increment fours or sixes if applicable
     if (run === 4) {
         player.fours++;
     } else if (run === 6) {
         player.sixes++;
     }
 
-    // Check if the over is completed
-    if (ballsThisOver === maxBallsPerOver) {
+    if (ballsThisOver === 6) {
         switchOver(run); // Switch over if all balls have been bowled
         if (run !== 1 && run !== 3) {
             // Ensure there are at least two players who are not out before switching strike
-            if (players[teamBatting].filter(player => !player.out).length > 1) {
+            if (getRemainingPlayers().length > 1) {
                 switchStrike(); // Switch strike if not 1 or 3 on the last ball of the over
             }
         }
-    } else if (ballsThisOver < maxBallsPerOver) {
+    } else if (ballsThisOver < 6) {
         // Switch strike if 1 or 3 is scored and there are enough players
-        if (players[teamBatting].filter(player => !player.out).length > 1) {
+        if (getRemainingPlayers().length > 1) {
             switchStrikeIfSingleOrTriple(run);
         }
     }
-
     updateGameUI();
 }
 
@@ -1005,7 +1000,8 @@ function updateGameUI() {
 
     updateScore();
     updateScorecard();
-    dynamicStatus();
+    updateDynamicStatus();
+    updateWicketsList();
 
 }
 
