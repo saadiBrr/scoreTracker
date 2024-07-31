@@ -658,6 +658,7 @@ function switchOver() {
     ballsThisOver = 0;
     overs++; // Increment the over count
     bouncersThisOver = 0;
+    byId('bouncersThisOver').textContent = null
     updateScore();
 }
 
