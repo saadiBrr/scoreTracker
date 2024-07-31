@@ -569,56 +569,6 @@ function handleWicketStrike(player) {
 
 }
 
-// function findNextStriker() {
-
-//     let player = players[teamBatting][striker];
-//     let remainingWickets = player.remainingWickets
-//     let remainingPlayers = getRemainingPlayers().filter(player => player && !player.out);
-
-
-//     // Handling for rotate strike on wicket
-//     if (remainingPlayers.length > 1) {
-//         // Find the next striker who is not the non-striker
-//         if (remainingWickets > 0) {
-//             if (rotateStrikeOnWicket == true) {
-//                 let temp;
-
-//                 temp = striker
-//                 striker = nonStriker
-//                 nonStriker = temp
-//             }
-
-//         } else {
-//             // Find the next striker who is not the non-striker
-//             let nextStriker = null;
-//             for (let i = 0; i < playerCounts[teamBatting]; i++) {
-//                 if (i !== nonStriker && i !== striker && players[teamBatting][i] && !players[teamBatting][i].out) {
-//                     nextStriker = i;
-//                     console.log(`NextStriker = ${nextStriker}`)
-//                     break;
-//                 }
-//             }
-
-//             if (nextStriker !== null) {
-//                 striker = nextStriker;
-//             } else {
-//                 striker = nonStriker;
-//                 nonStriker = null;
-//             }
-//         }
-
-//         // If only 1 player left, make him striker 
-//     } else if (getRemainingPlayers().filter(player => player && !player.out).length === 1) {
-//         let playerIndex = players[teamBatting].findIndex(player => remainingPlayers.includes(player.name));
-//         striker = playerIndex;
-//         nonStriker = null;
-//     } else {
-//         // If no players are left, add option to end the innings
-//         byId('endInningsButton').innerHTML = '<font color="#5e8dc4">End Innings</font>';
-//         gameEnded = true;
-//     }
-// }
-
 function createPlayerObjects(team) {
 
     players[team] = [];

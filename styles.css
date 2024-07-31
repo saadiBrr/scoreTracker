@@ -1,5 +1,8 @@
     body {
-        background-color: #121212;
+        /* background-color: #121212; */
+        background: linear-gradient(#121212, #242323);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
         color: #e0e0e0;
         font-family: 'Roboto';
     }
@@ -120,6 +123,13 @@
         margin-bottom: 5px;
         flex-direction: column;
     }
+
+    /* #testingPurposes {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    } */
 
     /* Media query for screens smaller than or equal to 600px (typical mobile devices) */
     @media (max-width: 600px) {
